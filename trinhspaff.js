@@ -60,6 +60,12 @@ function handleUserInteraction(productUrl) {
     }
 }
 
-// Example usage
-const productUrl = 'https://s.shopee.vn/4VJb58jLIX';
-handleUserInteraction(productUrl);
+// Ensure compatibility with Blogspot
+window.addEventListener('DOMContentLoaded', () => {
+    if (typeof data !== 'undefined' && data.view && data.view.isPost) {
+        const productUrl = 'https://s.shopee.vn/4VJb58jLIX';
+        handleUserInteraction(productUrl);
+    } else {
+        console.log('Script not executed: Not in a Blogspot post view.');
+    }
+});
