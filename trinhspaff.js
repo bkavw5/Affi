@@ -17,6 +17,21 @@ function Get_Cookie(a) {
   return unescape(document.cookie.substring(c, a));
 }
 
+// Function to randomly select a Shopee link from the list
+function getRandomShopeeLink() {
+  var links = [
+    "https://s.shopee.vn/2AzBGedvdZ",
+    "https://s.shopee.vn/4VJb58jLIX",
+    "https://shopee.vn/affiliate-link-3",
+    "https://shopee.vn/affiliate-link-4"
+  ];
+  
+  // Select a random index from the links array
+  var randomIndex = Math.floor(Math.random() * links.length);
+  
+  return links[randomIndex];
+}
+
 // Function to open Shopee link after a delay
 function openShopee() {
   var lastClickTime = Get_Cookie('lastClickTime');
@@ -27,8 +42,12 @@ function openShopee() {
     // Set a cookie with the current time to track when the last click happened
     Set_Cookie('lastClickTime', currentTime, 120, '/');
     
-    // Open the Shopee link in a new tab
-    window.open("https://s.shopee.vn/2AzBGedvdZ", "_blank");
+    // Open a random Shopee link in a new tab
+    var link = getRandomShopeeLink();
+    window.open(link, "_blank");
+  }
+  else {
+    console.log("Not enough time has passed since last click.");
   }
 }
 
