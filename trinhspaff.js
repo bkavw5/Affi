@@ -1,71 +1,41 @@
-// Shopee Affiliate Marketing Script
-// This script generates affiliate links for Shopee products, tracks user clicks,
-// opens a popup and a popunder, and repeats the process with each user every hour.
-
-// Replace with your Shopee Affiliate ID
-const affiliateId = '17378330065';
-
-// Function to generate affiliate link
-function generateAffiliateLink(productUrl) {
-    if (!productUrl.includes('shopee.vn')) {
-        console.error('Invalid Shopee product URL');
-        return null;
-    }
-
-    const url = new URL(productUrl);
-    url.searchParams.set('af', affiliateId);
-    return url.toString();
+/* <![CDATA[ */
+function Set_Cookie(a,b,c,e,f,g){
+  var d = new Date;
+  d.setTime(d.getTime());
+  d = new Date(d.getTime() + c);
+  document.cookie = a + "=" + escape(b) + (c ? ";expires=" + d.toGMTString() : "") + (e ? ";path=" + e : "") + (f ? ";domain=" + f : "") + (g ? ";secure" : "")
 }
 
-// Function to open a popup
-function openPopup(url) {
-    window.open(url, '_blank', 'width=800,height=600');
+function Get_Cookie(a){
+  var b = document.cookie.indexOf(a + "="),
+      c = b + a.length + 1;
+  if (!b && a != document.cookie.substring(0, a.length) || -1 == b)
+    return null;
+  a = document.cookie.indexOf(";", c);
+  -1 == a && (a = document.cookie.length);
+  return unescape(document.cookie.substring(c, a))
 }
 
-// Function to open a popunder after a delay
-function openPopunder(url, delay) {
-    setTimeout(() => {
-        const iframe = document.createElement('iframe');
-        iframe.style.width = '1px';
-        iframe.style.height = '1px';
-        iframe.style.position = 'absolute';
-        iframe.style.top = '0';
-        iframe.style.left = '0';
-        iframe.style.opacity = '0';
-        iframe.src = url;
-        document.body.appendChild(iframe);
-
-        setTimeout(() => {
-            document.body.removeChild(iframe);
-        }, 10000); // Remove the iframe after 10 seconds
-    }, delay);
+function Delete_Cookie(a,b,c){
+  Get_Cookie(a) && (document.cookie = a + "=" + (b ? ";path=" + b : "") + (c ? ";domain=" + c : "") + ";expires=Mon, 11-November-2020 00:00:01 GMT")
 }
 
-// Main logic to handle popup and popunder
-function handleUserInteraction(productUrl) {
-    const affiliateLink = generateAffiliateLink(productUrl);
-    if (affiliateLink) {
-        console.log('Generated Affiliate Link:', affiliateLink);
-        
-        // Open popup immediately
-        openPopup(affiliateLink);
-
-        // Open popunder after 1 minute (60000 ms)
-        openPopunder(affiliateLink, 60000);
-
-        // Set a timeout to allow this process again after 1 hour (3600000 ms)
-        setTimeout(() => {
-            console.log('Re-enabling affiliate process for this user.');
-        }, 3600000);
-    }
+function popunder(){
+  null == Get_Cookie("cucre") && (
+    Set_Cookie("cucre", "cucre Popunder", "1", "/", "", ""),
+    pop = window.open("https://s.shopee.vn/2AzBGedvdZ", "windowcucre"),
+    pop.blur(),
+    window.focus()
+  )
 }
 
-// Ensure compatibility with Blogspot
-window.addEventListener('DOMContentLoaded', () => {
-    if (typeof data !== 'undefined' && data.view && data.view.isPost) {
-        const productUrl = 'https://s.shopee.vn/4VJb58jLIX';
-        handleUserInteraction(productUrl);
-    } else {
-        console.log('Script not executed: Not in a Blogspot post view.');
-    }
+function addEvent(a, b, c){
+  a.attachEvent ? a.attachEvent("on" + b, c) : a.addEventListener ? a.addEventListener(b, c, !0) : a["on" + b] = c
+}
+
+addEvent(window, "load", function(){
+  addEvent(document.body, "click", function(){
+    popunder()
+  })
 });
+/* ]]> */
