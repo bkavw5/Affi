@@ -14,7 +14,7 @@ Hướng dẫn chèn mã vào Blogspot<br>
 3️⃣ Dán mã trên vào khung nội dung.<br>
 4️⃣ Nhấn Lưu và kiểm tra kết quả trên blog.<br><br>
 
-Cải tiến so với bản trước:<br><br>
+Cải tiến so với bản trước:<br>
 ✅ Dán trực tiếp vào Blogspot mà không cần chỉnh sửa thêm.<br>
 ✅ Giữ giao diện Blogspot sạch, không gây chậm trang.<br>
 ✅ Không bị trình duyệt chặn popup do sử dụng sự kiện click.
