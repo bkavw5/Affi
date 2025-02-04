@@ -1,0 +1,34 @@
+<script>
+(function () {
+  function popunder() {
+    var lastTime = localStorage.getItem("popunder_time");
+    var now = Date.now();
+    if (lastTime && now - lastTime < 20 * 60 * 1000) return;
+
+    var links = [
+      "https://s.shopee.vn/2AzBGedvdZ",
+      "https://s.shopee.vn/4VJb58jLIX",
+      "https://s.shopee.vn/LXiAFnH0M",
+      "https://s.lazada.vn/s.UAJFo?cc",
+    ];
+    var randomLink = links[Math.floor(Math.random() * links.length)];
+    var pop = window.open(randomLink, "_blank");
+
+    if (pop) {
+      pop.blur();
+      window.focus();
+      localStorage.setItem("popunder_time", now);
+    }
+  }
+
+  function clickHandler() {
+    popunder();
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+      document.addEventListener("click", clickHandler, true);
+    }, 30000);
+  });
+})();
+</script>
