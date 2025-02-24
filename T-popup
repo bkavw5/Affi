@@ -6,9 +6,9 @@
     if (lastTime && now - lastTime < 20 * 60 * 1000) return;
 
     var links = [
-      "https://s.shopee.vn/2AzBGedvdZ",
-      "https://s.shopee.vn/4VJb58jLIX",
-      "https://s.shopee.vn/LXiAFnH0M",
+      "link",
+      "link",
+      "link",
       "https://s.lazada.vn/s.UAJFo?cc",
     ];
     var randomLink = links[Math.floor(Math.random() * links.length)];
