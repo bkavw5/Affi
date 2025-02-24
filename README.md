@@ -1,4 +1,4 @@
-# Affi
+# ⚠️⚠️⚠️ Lưu ý shoppe có chính sách mới không dùng cách này được. vi phạm sẽ bị khóa tài khoản
 
 Đây là mã JavaScript mở popup Affiliate shopee, lazada ... khi click trên web của bạn.
 <br><br>
