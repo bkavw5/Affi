@@ -1,791 +1,564 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<html lang="vi">
 <head>
-  <meta charset='utf-8'/>
-  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'/>
-  <meta content='IE=edge' http-equiv='X-UA-Compatible'/>
-  <title>
-    <data:blog.title/>
-  </title>
-
-  <b:skin><![CDATA[/*]]></b:skin>
-  <style>
-    /* CSS tùy chỉnh cho visualizer */
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://hinhanhdep.net/wp-content/uploads/2017/11/hinh-nen-anime-4k-dep-17.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      color: white;
-      overflow: hidden;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .container {
-      width: 100%;
-      max-width: 800px;
-      text-align: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    
-    #chooser {
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-      backdrop-filter: blur(10px);
-    }
-    
-    #chooser-dialog {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    
-    .file-upload {
-      position: relative;
-      overflow: hidden;
-      display: inline-block;
-      width: 100%;
-    }
-    
-    .file-select {
-      background: rgba(0, 255, 204, 0.1);
-      border: 2px dashed #00FFCC;
-      border-radius: 10px;
-      padding: 15px;
-      color: #00FFCC;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .file-select:hover {
-      background: rgba(0, 255, 204, 0.2);
-    }
-    
-    .file-select input[type="file"] {
-      position: absolute;
-      left: 0;
-      top: 0;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-    }
-    
-    button {
-      background: linear-gradient(45deg, #00FFCC, #0077FF);
-      border: none;
-      border-radius: 50px;
-      color: white;
-      padding: 15px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
-    }
-    
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 255, 204, 0.6);
-    }
-    
-    button:active {
-      transform: translateY(1px);
-    }
-    
-    button.disabled {
-      background: #666;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    
-    #scene {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    #scene-canvas {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-    
-    .audio-info {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 10px;
-      border-radius: 10px;
-      margin: 0 20px;
-    }
-    
-    .hidden {
-      display: none !important;
-    }
-    
-    .visible {
-      display: block;
-    }
-    
-    #spinner-outer {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px;
-    }
-    
-    #error {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    
-    #error-dialog {
-      background: #222;
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
-      max-width: 400px;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-    }
-    
-    #error-title {
-      color: #FF3366;
-      margin-bottom: 15px;
-    }
-    
-    #error-button {
-      background: #FF3366;
-      margin-top: 20px;
-    }
-    
-    .title-bar {
-      position: absolute;
-      top: 20px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      z-index: 10;
-    }
-    
-    .title-bar h1 {
-      font-size: 24px;
-      margin: 0;
-      color: #00FFCC;
-      text-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
-    }
-    
-    .title-bar p {
-      margin: 5px 0 0;
-      font-size: 14px;
-      color: #ccc;
-    }
-    
-    .water-wave {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 20%;
-      background: linear-gradient(transparent, rgba(0, 255, 204, 0.2));
-      z-index: 1;
-      pointer-events: none;
-    }
-  </style>
-  <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizer Nhạc với Dải Thanh Trắng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://hinhanhdep.net/wp-content/uploads/2017/11/hinh-nen-anime-4k-dep-17.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+        }
+        
+        #chooser {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        #chooser-dialog {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-select:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .file-select input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ffffff, #cccccc);
+            border: none;
+            border-radius: 50px;
+            color: #000000;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button.disabled {
+            background: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+            color: #999;
+        }
+        
+        #scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+        
+        #scene-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .audio-info {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 0 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .audio-info div {
+            margin: 5px 0;
+        }
+        
+        #song-name {
+            font-weight: bold;
+            font-size: 18px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        #song-time {
+            font-size: 16px;
+            color: #cccccc;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .visible {
+            display: flex !important;
+        }
+        
+        #spinner-outer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+        }
+        
+        #error {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        #error-dialog {
+            background: #222;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+        
+        #error-title {
+            color: #FF3366;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        #error-button {
+            background: #FF3366;
+            margin-top: 20px;
+            color: white;
+        }
+        
+        .title {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #cccccc;
+        }
+        
+        .volume-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .volume-control span {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .volume-control input {
+            width: 100px;
+        }
+    </style>
 </head>
 
 <body id='pf_foto'>
-  <div class='water-wave'></div>
-  
-  <div class='title-bar'>
-    <h1>Visualizer Nhạc 3D</h1>
-    <p>Trải nghiệm âm thanh sống động với hiệu ứng sóng nước</p>
-  </div>
-
-  <!-- Main section cho Blogger -->
-  <b:section id='main-section' class='main-section' maxwidgets='10' showaddelement='yes'>
-    <b:widget id='HTML1' locked='false' title='Music Visualizer' type='HTML'>
-      <b:includable id='main'>
-        <div class='container'>
-          <div id='chooser'>
+    <div class="container">
+        <h1 class="title">Visualizer Nhạc</h1>
+        <p class="subtitle">Dải thanh trắng nhấp nhô theo nhịp nhạc</p>
+        
+        <div id='chooser'>
             <div id='chooser-dialog'>
-              <input accept='image/*' id='verborgen_file' type='file'/>
-              <button accept='image/*' id='uploadButton' type='button'>Chọn ảnh nền (JPG,PNG,GIF...)</button>
-              
-              <div class='file-upload'>
-                <div class='file-select'>
-                  <input accept='audio/*' id='chooser-input' type='file'/> 
-                  Chọn nhạc cần phát (MP3,WAV,CDA...)
+                <input accept='image/*' id='verborgen_file' type='file'/>
+                <button accept='image/*' id='uploadButton' type='button'>Chọn ảnh nền</button>
+                
+                <div class='file-upload'>
+                    <div class='file-select'>
+                        <input accept='audio/*' id='chooser-input' type='file'/> 
+                        Chọn nhạc cần phát (MP3, WAV, ...)
+                    </div>
                 </div>
-              </div>
-              
-              <p>Chỉ nhận file âm thanh (MP3: audio/*). Những file này sẽ được xử lý nội bộ.</p>
-              
-              <div id='spinner-outer' class='hidden'>
-                <svg height='30' id='spinner' viewBox='0 0 30 30' width='30' xmlns='http://www.w3.org/2000/svg'>
-                  <circle class='path' cx='15' cy='15' fill='none' r='13' stroke-linecap='round' stroke-width='2'/>
-                </svg>
-              </div>
-              
-              <button id='chooser-button'>Phát Nhạc</button>
+                
+                <p>Chỉ nhận file âm thanh. File sẽ được xử lý trực tiếp trên trình duyệt.</p>
+                
+                <div id='spinner-outer' class='hidden'>
+                    <svg height='30' id='spinner' viewBox='0 0 30 30' width='30' xmlns='http://www.w3.org/2000/svg'>
+                        <circle class='path' cx='15' cy='15' fill='none' r='13' stroke-linecap='round' stroke-width='2'/>
+                    </svg>
+                </div>
+                
+                <button id='chooser-button'>Phát Nhạc</button>
             </div>
-          </div>
         </div>
+    </div>
 
-        <div id='scene' class='hidden'>
-          <canvas id='scene-canvas'></canvas>
-          <div class='audio-info'>
-            <div id='song-name'>Chưa có bài hát</div>
-            <div id='song-time'>00:00 / 00:00</div>
-          </div>
-        </div>
+    <div id='scene' class='hidden'>
+        <canvas id='scene-canvas'></canvas>
+    </div>
 
-        <div id='error' class='hidden'>
-          <div id='error-dialog'>
+    <div class='audio-info'>
+        <div id='song-name'>Chưa có bài hát</div>
+        <div id='song-time'>00:00 / 00:00</div>
+    </div>
+
+    <div class="volume-control">
+        <span>🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.75">
+    </div>
+
+    <div id='error' class='hidden'>
+        <div id='error-dialog'>
             <h1 id='error-title'></h1>
             <p id='error-text'></p>
             <button id='error-button'>Đóng</button>
-          </div>
         </div>
-      </b:includable>
-    </b:widget>
-  </b:section>
+    </div>
 
-  <!-- Additional section để đảm bảo theme có đủ sections -->
-  <b:section id='footer-section' class='footer-section' maxwidgets='1' showaddelement='no'>
-    <b:widget id='HTML2' locked='true' title='' type='HTML'/>
-  </b:section>
+    <script>
+        // Code xử lý audio và visualizer
+        let audioInput = null;
+        let file = null;
+        let fileName = "";
+        let playButton = null;
+        let buttonDisabled = true;
+        let audioContext = null;
+        let audioBufferSourceNode = null;
+        let audioPlaying = false;
+        let canvas = null;
+        let ctx = null;
+        let elapsedTime = 0;
+        let startTime = 0;
+        let durationTime = 0;
+        let analyser = null;
+        let audioDrawingArray = null;
+        let animationFrameId = null;
+        let volume = 0.75;
+        let audioGainNode = null;
 
-  <script>
-    // Tối ưu hóa visualizer với hiệu ứng sóng nước
-    $(document).ready(function() {
-      // Xử lý chọn ảnh nền
-      $('#verborgen_file').hide();
-      $('#uploadButton').on('click', function() {
-        $('#verborgen_file').click();
-      });
-
-      $('#verborgen_file').change(function() {
-        var file = this.files[0];
-        if (file) {
-          var reader = new FileReader();
-          reader.onloadend = function() {
-            $('#pf_foto').css('background-image', 'url("' + reader.result + '")');
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // Thiết lập canvas
-      var canvas = document.getElementById('scene-canvas');
-      var ctx = canvas.getContext('2d');
-      
-      function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-      
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
-    });
-
-    // Code xử lý audio và visualizer
-    var audioInput = null;
-    var file = null;
-    var fileName = "";
-    var playButton = null;
-    var buttonDisabled = true;
-    var audioContext = null;
-    var audioBufferSourceNode = null;
-    var audioPlaying = false;
-    var canvas = null;
-    var ctx = null;
-    var elapsedTime = 0;
-    var startTime = 0;
-    var durationTime = 0;
-    var analyser = null;
-    var audioDrawingArray = null;
-    var radius = 150;
-    var graphSize = 200; // Tăng kích thước đồ thị
-    var xc = 0;
-    var yc = 0;
-    var i = 0;
-    var animationFrameId = null;
-    var lastTimeStamp = 0;
-    var textX = 200;
-    var textStopState = 1;
-    var textStopStartTimeStamp = -1;
-    var volume = 0.75;
-    var audioGainNode = null;
-    var volumeAnimation = 0;
-
-    // Biến mới cho hiệu ứng sóng
-    var waves = [];
-    var waveCount = 5;
-    var particles = [];
-    var particleCount = 100;
-
-    window.onload = function() {
-      console && console.log("%cVisualizer Nhạc 3D\n%cPhiên bản nâng cấp với hiệu ứng sóng nước\nPhát triển dựa trên Web Audio API", "font-size: 1.5em; font-weight: bold; color: #00FFCC", "font-size: 1em; color: #ccc");
-      
-      window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
-      window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
-      window.cancelAnimationFrame = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.msCancelAnimationFrame;
-      
-      try {
-        audioContext = new AudioContext();
-      } catch(error) {
-        console.error(error);
-      }
-      
-      audioInput = document.getElementById("chooser-input");
-      audioInput.onchange = cbInputChange;
-      
-      playButton = document.getElementById("chooser-button");
-      playButton.onclick = cbButtonClick;
-      disableButton();
-      
-      canvas = document.getElementById("scene-canvas");
-      ctx = canvas.getContext("2d");
-      
-      // Khởi tạo hiệu ứng sóng
-      initWaves();
-      initParticles();
-      
-      if(canvas.addEventListener) {
-        // IE9, Chrome, Safari, Opera
-        canvas.addEventListener("mousewheel", cbCanvasScroll, false);
-        // Firefox
-        canvas.addEventListener("DOMMouseScroll", cbCanvasScroll, false);
-      }
-      // IE 6/7/8
-      else {
-        canvas.attachEvent("onmousewheel", cbCanvasScroll);
-      }
-      
-      analyser = audioContext.createAnalyser();
-      audioGainNode = audioContext.createGain();
-      
-      analyser.connect(audioGainNode);
-      audioGainNode.connect(audioContext.destination);
-      
-      document.getElementById("error-button").onclick = cbErrorButtonClick;
-      
-      // Hiệu ứng cho nước
-      animateWater();
-    };
-
-    function initWaves() {
-      waves = [];
-      for (var i = 0; i < waveCount; i++) {
-        waves.push({
-          phase: Math.random() * Math.PI * 2,
-          amplitude: 10 + Math.random() * 20,
-          frequency: 0.01 + Math.random() * 0.02,
-          speed: 0.5 + Math.random() * 1.5
-        });
-      }
-    }
-
-    function initParticles() {
-      particles = [];
-      for (var i = 0; i < particleCount; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: canvas.height + Math.random() * 100,
-          size: 1 + Math.random() * 3,
-          speed: 0.5 + Math.random() * 2,
-          opacity: 0.2 + Math.random() * 0.5
-        });
-      }
-    }
-
-    function animateWater() {
-      if (!audioPlaying) {
-        requestAnimationFrame(animateWater);
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Vẽ các hạt particle
-        for (var i = 0; i < particles.length; i++) {
-          var p = particles[i];
-          p.y -= p.speed;
-          if (p.y < 0) {
-            p.y = canvas.height + Math.random() * 100;
-            p.x = Math.random() * canvas.width;
-          }
-          
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0, 255, 204, ' + p.opacity + ')';
-          ctx.fill();
-        }
-        
-        // Vẽ sóng nước khi không có nhạc
-        drawWaterWaves(0.5);
-      }
-    }
-
-    function drawWaterWaves(intensity) {
-      var waveHeight = canvas.height * 0.2;
-      
-      for (var w = 0; w < waves.length; w++) {
-        var wave = waves[w];
-        wave.phase += wave.speed * 0.01;
-        
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height);
-        
-        for (var x = 0; x < canvas.width; x += 5) {
-          var y = canvas.height - waveHeight - 
-                  Math.sin(x * wave.frequency + wave.phase) * 
-                  wave.amplitude * intensity;
-          ctx.lineTo(x, y);
-        }
-        
-        ctx.lineTo(canvas.width, canvas.height);
-        ctx.closePath();
-        
-        var gradient = ctx.createLinearGradient(0, canvas.height - waveHeight - 50, 0, canvas.height);
-        gradient.addColorStop(0, 'rgba(0, 255, 204, ' + (0.1 + 0.1 * w) + ')');
-        gradient.addColorStop(1, 'rgba(0, 255, 204, 0)');
-        
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      }
-    }
-
-    function cbCanvasScroll(e) {
-      var e = window.event || e;
-      var detail = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-      
-      if(detail > 0) {
-        volume = Math.min(1, volume + 0.025);
-      } else {
-        volume = Math.max(0, volume - 0.025);
-      }
-      
-      if(audioGainNode != null) {
-        audioGainNode.gain.value = Math.pow(volume, 2.0);
-      }
-      
-      volumeAnimation = 400;
-    }
-
-    function cbInputChange() {
-      if(audioInput.files.length != 0) {
-        file = audioInput.files[0];
-        fileName = file.name;
-        
-        // Cập nhật tên bài hát
-        document.getElementById('song-name').textContent = fileName;
-        
-        enableButton();
-      }
-    }
-
-    function disableButton() {
-      buttonDisabled = true;
-      document.getElementById("chooser-button").className = "disabled";
-    }
-
-    function enableButton() {
-      buttonDisabled = false;
-      document.getElementById("chooser-button").className = "";
-    }
-
-    function cbButtonClick() {
-      if(!buttonDisabled) {
-        if(file.type.split("/")[0] == "audio") {
-          var fileReader = new FileReader();
-          fileReader.onload = function(e) {
-            var fileResult = e.target.result;
-            if(audioContext == null) {
-              return;
+        // Khởi tạo
+        window.onload = function() {
+            console.log("%cVisualizer Nhạc với Dải Thanh Trắng", "font-size: 1.5em; font-weight: bold; color: #ffffff");
+            
+            // Thiết lập Audio Context
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            try {
+                audioContext = new AudioContext();
+            } catch(error) {
+                console.error(error);
+                showError("Trình duyệt không hỗ trợ", "Trình duyệt của bạn không hỗ trợ Web Audio API. Vui lòng sử dụng trình duyệt hiện đại hơn.");
             }
-            audioContext.decodeAudioData(fileResult, function(buffer) {
-              setTimeout(function() { 
-                visualize(buffer); 
-                document.getElementById("spinner-outer").className = "hidden"; 
-              }, 1000);
-              
-              showScene();
-            }, function(error) {
-              console.error(error);
-              showError("Lỗi khi giải mã âm thanh", error.toString());
-              document.getElementById("spinner-outer").className = "hidden";
+            
+            // Thiết lập các phần tử UI
+            audioInput = document.getElementById("chooser-input");
+            audioInput.onchange = cbInputChange;
+            
+            playButton = document.getElementById("chooser-button");
+            playButton.onclick = cbButtonClick;
+            disableButton();
+            
+            canvas = document.getElementById("scene-canvas");
+            ctx = canvas.getContext("2d");
+            
+            // Thiết lập thanh volume
+            const volumeSlider = document.getElementById("volume-slider");
+            volumeSlider.addEventListener("input", function() {
+                volume = parseFloat(this.value);
+                if (audioGainNode) {
+                    audioGainNode.gain.value = volume;
+                }
             });
-          };
-          fileReader.onerror = function(error) {
-            console.error(error);
-            showError("Lỗi khi đọc tập tin", error.toString());
-            document.getElementById("spinner-outer").className = "hidden";
-          };
-          
-          fileReader.readAsArrayBuffer(file);
-          
-          document.getElementById("spinner-outer").className = "";
-        } else {
-          showError("Lỗi!!!", "Vui lòng chọn file nhạc MP3 để được hỗ trợ tốt nhất.");
+            
+            // Xử lý chọn ảnh nền
+            document.getElementById('verborgen_file').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${event.target.result})`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            document.getElementById('uploadButton').addEventListener('click', function() {
+                document.getElementById('verborgen_file').click();
+            });
+            
+            // Xử lý nút đóng lỗi
+            document.getElementById("error-button").onclick = cbErrorButtonClick;
+            
+            // Thiết lập kích thước canvas
+            resizeCanvas();
+            window.addEventListener("resize", resizeCanvas);
+        };
+
+        function resizeCanvas() {
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
         }
-      }
-    }
 
-    function showScene() {
-      clearDraw();
-      
-      document.getElementById("chooser").className = "hidden";
-      document.getElementById("scene").className = "visible";
-    }
-
-    function showChooser() {
-      document.getElementById("chooser").className = "";
-      document.getElementById("scene").className = "hidden";
-    }
-
-    function visualize(buffer) {
-      audioBufferSourceNode = audioContext.createBufferSource();
-      
-      audioBufferSourceNode.buffer = buffer;
-      analyser.smoothingTimeConstant = 0.75;
-      analyser.fftSize = 512; // Tăng độ phân tích tần số
-      audioGainNode.gain.value = volume;
-      
-      audioBufferSourceNode.connect(analyser);
-      
-      audioBufferSourceNode.start();
-      
-      audioPlaying = true;
-      startTime = audioContext.currentTime;
-      durationTime = buffer.duration;
-      
-      draw(0);
-      
-      audioBufferSourceNode.onended = function() {
-        audioBufferSourceNode.stop();
-        audioBufferSourceNode.disconnect();
-        
-        if(animationFrameId !== null) {
-          cancelAnimationFrame(animationFrameId);
-          animationFrameId = null;
+        function cbInputChange() {
+            if(audioInput.files.length !== 0) {
+                file = audioInput.files[0];
+                fileName = file.name;
+                
+                // Cập nhật tên bài hát
+                document.getElementById('song-name').textContent = fileName;
+                
+                enableButton();
+            }
         }
-        
-        audioPlaying = false;
-        showChooser();
-        
-        // Khởi động lại hiệu ứng nước
-        animateWater();
-      };
-    }
 
-    function generateTime(seconds) {
-      var minutes = Math.floor(seconds / 60);
-      var seconds = Math.floor(seconds % 60);
-      
-      return ((minutes < 10)?("0" + minutes):(minutes)) + ":" + ((seconds < 10)?("0" + seconds):(seconds));
-    }
-
-    function generateName(fileName) {
-      var parts = fileName.split(".");
-      parts.pop();
-      return parts.join(".");
-    }
-
-    function clearDraw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function draw(currentTimeStamp) {
-      elapsedTime = audioContext.currentTime - startTime;
-      audioDrawingArray = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(audioDrawingArray);
-      
-      // Cập nhật thời gian bài hát
-      document.getElementById('song-time').textContent = 
-        generateTime(elapsedTime) + " / " + generateTime(durationTime);
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Vẽ background mờ
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Vẽ các hạt particle
-      for (var i = 0; i < particles.length; i++) {
-        var p = particles[i];
-        p.y -= p.speed;
-        if (p.y < 0) {
-          p.y = canvas.height + Math.random() * 100;
-          p.x = Math.random() * canvas.width;
+        function disableButton() {
+            buttonDisabled = true;
+            document.getElementById("chooser-button").className = "disabled";
         }
-        
-        // Di chuyển hạt theo âm nhạc
-        var freqIndex = Math.floor((p.x / canvas.width) * audioDrawingArray.length);
-        if (freqIndex < audioDrawingArray.length) {
-          p.x += (audioDrawingArray[freqIndex] / 256 - 0.5) * 2;
-        }
-        
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 255, 204, ' + p.opacity + ')';
-        ctx.fill();
-      }
-      
-      // Vẽ hiệu ứng sóng nước dựa trên âm nhạc
-      var intensity = 0;
-      for (var i = 0; i < audioDrawingArray.length; i++) {
-        intensity += audioDrawingArray[i];
-      }
-      intensity = intensity / audioDrawingArray.length / 256;
-      
-      drawWaterWaves(intensity);
-      
-      // Vẽ visualizer chính (hình tròn)
-      var centerX = canvas.width / 2;
-      var centerY = canvas.height / 2;
-      var maxRadius = Math.min(canvas.width, canvas.height) * 0.4;
-      
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#00FFCC';
-      ctx.beginPath();
-      
-      var points = 180;
-      var sliceWidth = 2 * Math.PI / points;
-      
-      for (var i = 0; i <= points; i++) {
-        var angle = i * sliceWidth;
-        var value = audioDrawingArray[Math.floor(i / points * audioDrawingArray.length)] / 256;
-        var radius = maxRadius * 0.6 + value * maxRadius * 0.4;
-        
-        var x = centerX + Math.cos(angle) * radius;
-        var y = centerY + Math.sin(angle) * radius;
-        
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      }
-      
-      ctx.closePath();
-      ctx.stroke();
-      
-      // Vẽ các thanh xung quanh
-      var bars = 60;
-      var barWidth = 4;
-      var barMaxHeight = maxRadius * 0.4;
-      
-      for (var i = 0; i < bars; i++) {
-        var angle = i * 2 * Math.PI / bars;
-        var value = audioDrawingArray[Math.floor(i / bars * audioDrawingArray.length)] / 256;
-        var barHeight = value * barMaxHeight;
-        
-        var x1 = centerX + Math.cos(angle) * (maxRadius + 10);
-        var y1 = centerY + Math.sin(angle) * (maxRadius + 10);
-        var x2 = centerX + Math.cos(angle) * (maxRadius + 10 + barHeight);
-        var y2 = centerY + Math.sin(angle) * (maxRadius + 10 + barHeight);
-        
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.lineWidth = barWidth;
-        
-        // Gradient màu cho các thanh
-        var gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-        gradient.addColorStop(0, '#00FFCC');
-        gradient.addColorStop(1, '#0077FF');
-        
-        ctx.strokeStyle = gradient;
-        ctx.stroke();
-      }
-      
-      // Vẽ vòng tròn trung tâm
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, maxRadius * 0.2, 0, 2 * Math.PI);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.fill();
-      ctx.strokeStyle = '#00FFCC';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      
-      // Hiển thị thông tin
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 20px Roboto";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(generateTime(elapsedTime), centerX, centerY - 10);
-      
-      ctx.fillStyle = "#CCCCCC";
-      ctx.font = "14px Roboto";
-      ctx.fillText("-" + generateTime(durationTime - elapsedTime), centerX, centerY + 15);
-      
-      // Hiển thị volume
-      if (volumeAnimation > 0) {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        ctx.fillRect(20, canvas.height - 100, 30, 80);
-        
-        ctx.fillStyle = "#00FFCC";
-        var volumeHeight = volume * 70;
-        ctx.fillRect(20, canvas.height - 30 - volumeHeight, 30, volumeHeight);
-        
-        ctx.fillStyle = "#FFFFFF";
-        ctx.font = "12px Roboto";
-        ctx.textAlign = "left";
-        ctx.fillText(Math.round(volume * 100) + "%", 25, canvas.height - 105);
-        
-        volumeAnimation -= (currentTimeStamp - lastTimeStamp) / 2.5;
-      }
-      
-      // bug workaround, see https://code.google.com/p/chromium/issues/detail?id=403908
-      if(audioPlaying && elapsedTime / durationTime > 1) {
-        console.log("Manually dispatch 'ended' event...\nsee https://code.google.com/p/chromium/issues/detail?id=403908");
-        var e = new Event("ended");
-        audioBufferSourceNode.dispatchEvent(e);
-      }
-      
-      if(audioPlaying) {
-        animationFrameId = requestAnimationFrame(draw);
-      }
-      
-      lastTimeStamp = currentTimeStamp;
-    }
 
-    function showError(title, text) {
-      document.getElementById("error-title").innerHTML = title;
-      document.getElementById("error-text").innerHTML = text;
-      document.getElementById("error").className = "";
-    }
+        function enableButton() {
+            buttonDisabled = false;
+            document.getElementById("chooser-button").className = "";
+        }
 
-    function cbErrorButtonClick() {
-      document.getElementById("error").className = "hidden";
-    }
-  </script>
+        function cbButtonClick() {
+            if(!buttonDisabled) {
+                if(file.type.split("/")[0] === "audio") {
+                    const fileReader = new FileReader();
+                    fileReader.onload = function(e) {
+                        const fileResult = e.target.result;
+                        if(audioContext == null) {
+                            return;
+                        }
+                        
+                        audioContext.decodeAudioData(fileResult, function(buffer) {
+                            visualize(buffer);
+                            document.getElementById("spinner-outer").className = "hidden";
+                        }, function(error) {
+                            console.error(error);
+                            showError("Lỗi khi giải mã âm thanh", error.toString());
+                            document.getElementById("spinner-outer").className = "hidden";
+                        });
+                    };
+                    fileReader.onerror = function(error) {
+                        console.error(error);
+                        showError("Lỗi khi đọc tập tin", error.toString());
+                        document.getElementById("spinner-outer").className = "hidden";
+                    };
+                    
+                    fileReader.readAsArrayBuffer(file);
+                    
+                    document.getElementById("spinner-outer").className = "";
+                } else {
+                    showError("Lỗi!!!", "Vui lòng chọn file nhạc (MP3, WAV, ...).");
+                }
+            }
+        }
+
+        function showScene() {
+            document.getElementById("chooser").className = "hidden";
+            document.getElementById("scene").className = "visible";
+        }
+
+        function showChooser() {
+            document.getElementById("chooser").className = "";
+            document.getElementById("scene").className = "hidden";
+        }
+
+        function visualize(buffer) {
+            if (!audioContext) return;
+            
+            // Tạo nút nguồn âm thanh
+            audioBufferSourceNode = audioContext.createBufferSource();
+            audioBufferSourceNode.buffer = buffer;
+            
+            // Thiết lập bộ phân tích
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            audioDrawingArray = new Uint8Array(analyser.frequencyBinCount);
+            
+            // Thiết lập bộ khuếch đại âm lượng
+            audioGainNode = audioContext.createGain();
+            audioGainNode.gain.value = volume;
+            
+            // Kết nối các nút
+            audioBufferSourceNode.connect(analyser);
+            analyser.connect(audioGainNode);
+            audioGainNode.connect(audioContext.destination);
+            
+            // Bắt đầu phát nhạc
+            audioBufferSourceNode.start();
+            audioPlaying = true;
+            startTime = audioContext.currentTime;
+            durationTime = buffer.duration;
+            
+            // Bắt đầu vẽ visualizer
+            draw();
+            
+            // Xử lý sự kiện khi nhạc kết thúc
+            audioBufferSourceNode.onended = function() {
+                audioPlaying = false;
+                if(animationFrameId !== null) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                showChooser();
+            };
+            
+            // Hiển thị scene
+            showScene();
+        }
+
+        function generateTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes < 10 ? '0' + minutes : minutes}:${secs < 10 ? '0' + secs : secs}`;
+        }
+
+        function draw() {
+            if (!audioPlaying) return;
+            
+            // Cập nhật thời gian
+            elapsedTime = audioContext.currentTime - startTime;
+            document.getElementById('song-time').textContent = 
+                `${generateTime(elapsedTime)} / ${generateTime(durationTime)}`;
+            
+            // Lấy dữ liệu tần số
+            analyser.getByteFrequencyData(audioDrawingArray);
+            
+            // Xóa canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Vẽ dải thanh trắng nhấp nhô
+            const barCount = 100; // Số lượng thanh
+            const barWidth = canvas.width / barCount;
+            const centerY = canvas.height / 2;
+            const maxBarHeight = canvas.height * 0.4;
+            
+            for (let i = 0; i < barCount; i++) {
+                // Lấy giá trị tần số tương ứng
+                const value = audioDrawingArray[Math.floor(i / barCount * audioDrawingArray.length)] / 255;
+                const barHeight = value * maxBarHeight;
+                
+                // Vẽ thanh
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fillRect(i * barWidth, centerY - barHeight/2, barWidth - 2, barHeight);
+                
+                // Hiệu ứng phản chiếu
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fillRect(i * barWidth, centerY + barHeight/2, barWidth - 2, 2);
+            }
+            
+            // Hiệu ứng hạt particle
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            for (let i = 0; i < 20; i++) {
+                const index = Math.floor(Math.random() * audioDrawingArray.length);
+                const intensity = audioDrawingArray[index] / 255;
+                
+                if (intensity > 0.7) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    const size = intensity * 5;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // Tiếp tục vẽ
+            animationFrameId = requestAnimationFrame(draw);
+        }
+
+        function showError(title, text) {
+            document.getElementById("error-title").innerHTML = title;
+            document.getElementById("error-text").innerHTML = text;
+            document.getElementById("error").className = "";
+        }
+
+        function cbErrorButtonClick() {
+            document.getElementById("error").className = "hidden";
+        }
+    </script>
 </body>
 </html>
