@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Film LQH.DEV - Xem phim online chất lượng cao</title>
+    <title>RoPhim - Phim hay cả rổ - Xem Phim Mới HD Online Vietsub</title>
     <meta name="description" content="Xem phim online chất lượng cao, cập nhật phim mới nhanh chóng, đa dạng thể loại từ hành động, tình cảm, kinh dị đến phim Việt Nam, Hàn Quốc, Trung Quốc." />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -154,22 +154,61 @@
         .hot-slider {
             position: relative;
             margin: 20px 0 var(--section-spacing);
+            height: 500px;
             overflow: hidden;
         }
-        .hot-slider .movie {
-            width: 300px;
-            height: 450px;
+        .hot-slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
-        .hot-slider .movie img {
-            height: 400px;
+        .hot-slide.active {
+            opacity: 1;
         }
-        .hot-slider .title {
-            font-size: 16px;
-            height: 50px;
+        .hot-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        .slider-container {
+        .hot-slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            z-index: 2;
+        }
+        .hot-slide-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .hot-slide-meta {
             display: flex;
-            transition: transform 0.5s ease;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .hot-slide-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        .hot-slide-description {
+            max-width: 600px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        .hot-slide-actions {
+            display: flex;
+            gap: 10px;
         }
         .slider-nav {
             position: absolute;
@@ -189,6 +228,53 @@
         }
         .slider-nav.next {
             right: 10px;
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .slider-dot.active {
+            background: var(--accent);
+        }
+        .btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         .popup {
             position: fixed;
@@ -321,9 +407,9 @@
         }
         @media (max-width: 600px) {
             .movie { width: 130px; }
-            .hot-slider .movie { width: 200px; height: 300px; }
-            .hot-slider .movie img { height: 250px; }
-            .hot-slider .title { font-size: 14px; height: 50px; }
+            .hot-slider { height: 300px; }
+            .hot-slide-title { font-size: 1.8rem; }
+            .hot-slide-description { font-size: 0.9rem; max-width: 100%; }
             iframe { height: 280px; }
             .popup-body { flex-direction: column; align-items: center; }
             .popup-body img { width: 180px; }
@@ -501,12 +587,18 @@
     </div>
 
     <main id="main">
-        <h2><i class="fas fa-fire"></i> Phim Nổi Bật</h2>
         <div id="hotSlider" class="hot-slider">
             <button class="slider-nav prev"><i class="fas fa-chevron-left"></i></button>
-            <div id="movies-hot" class="slider-container"></div>
+            <div id="movies-hot"></div>
             <button class="slider-nav next"><i class="fas fa-chevron-right"></i></button>
+            <div class="slider-dots" id="sliderDots"></div>
         </div>
+        <h2><i class="fas fa-fire"></i> Sôi Nổi Nhất</h2>
+        <div id="movies-hot-row" class="movie-row"></div>
+        <h2><i class="fas fa-heart"></i> Yêu Thích Nhất</h2>
+        <div id="movies-fav" class="movie-row"></div>
+        <h2><i class="fas fa-star"></i> Thể Loại Hot</h2>
+        <div id="movies-hot-genre" class="movie-row"></div>
         <h2><i class="fas fa-bolt"></i> Phim Hành Động</h2>
         <div id="movies-hd" class="movie-row"></div>
         <h2><i class="fas fa-heart"></i> Phim Tình Cảm</h2>
@@ -556,7 +648,7 @@
             <div id="logo">
                 <img src="https://i.imgur.com/HECw3fz.png" alt="Logo" style="height:70px;" />
             </div>
-            <p>LQH.DEV cung cấp thông tin phim hot, cập nhật nhanh các thể loại phim đa dạng, phục vụ người xem phim tại Việt Nam và quốc tế. Chúng tôi luôn cố gắng mang đến trải nghiệm xem phim tốt nhất cho bạn.</p>
+            <p>RoPhim cung cấp thông tin phim hot, cập nhật nhanh các thể loại phim đa dạng, phục vụ người xem phim tại Việt Nam và quốc tế. Chúng tôi luôn cố gắng mang đến trải nghiệm xem phim tốt nhất cho bạn.</p>
             <p>Lưu ý: Chúng tôi từ chối mọi trách nhiệm liên quan đến nội dung hiển thị/tồn tại trên trang. Tất cả video và dữ liệu tại đây đều được tổng hợp từ các nguồn phổ biến trên Internet, và không thuộc quyền sở hữu hay kiểm soát của chúng tôi. Chúng tôi không cung cấp dịch vụ phát trực tuyến chính thức. Nếu bạn cho rằng quyền lợi của mình bị ảnh hưởng, vui lòng <a href="#">liên hệ</a> ngay cho chúng tôi sẽ xử lý và gỡ bỏ nội dung vi phạm kịp thời. Xin cảm ơn sự thông cảm và hợp tác của bạn.</p>
             <p>Copyright &copy; 2025</p>
         </div>
@@ -615,7 +707,7 @@
         });
 
         function buildImageUrl(path, cdnDomain = "https://phimimg.com") {
-            if (!path) return "https://via.placeholder.com/300x440?text=No+Image";
+            if (!path) return "https://via.placeholder.com/1200x500?text=No+Image";
             if (path.startsWith("http")) return path;
             return cdnDomain.replace(/\/+$/, "") + "/" + path.replace(/^\/+/, "");
         }
@@ -634,6 +726,40 @@
             }).join("");
         }
 
+        function renderHotSlider(movies, containerId, cdnDomain = "https://phimimg.com") {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            el.innerHTML = movies.map(m => {
+                const imgPath = m.poster_url || m.thumb_url || "";
+                const img = buildImageUrl(imgPath, cdnDomain);
+                const safeName = (m.name || m.origin_name || "No title").replace(/"/g, "&quot;");
+                const desc = (m.content || "Không có mô tả.").substring(0, 150) + "...";
+                const rating = m.tmdb?.vote_average || Math.random() * 5 + 5;
+                const year = m.year || "N/A";
+                const time = m.time || "N/A";
+                const quality = m.quality || "N/A";
+                return `
+                    <div class="hot-slide">
+                        <img src="${img}" alt="${safeName}" loading="lazy">
+                        <div class="hot-slide-content">
+                            <h2 class="hot-slide-title">${safeName}</h2>
+                            <div class="hot-slide-meta">
+                                <span><i class="fas fa-star"></i> ${rating.toFixed(1)}/10</span>
+                                <span><i class="fas fa-clock"></i> ${time}</span>
+                                <span><i class="fas fa-calendar"></i> ${year}</span>
+                                <span><i class="fas fa-film"></i> ${quality}</span>
+                            </div>
+                            <p class="hot-slide-description">${desc}</p>
+                            <div class="hot-slide-actions">
+                                <button class="btn btn-primary" onclick="getMovieDetail('${m.slug}')"><i class="fas fa-play"></i> Xem ngay</button>
+                                <button class="btn btn-secondary"><i class="fas fa-plus"></i> Thêm vào danh sách</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
         async function loadInitial() {
             try {
                 const r = await fetch("https://phimapi.com/danh-sach/phim-moi-cap-nhat-v3?page=1");
@@ -642,10 +768,16 @@
                 const cdn = d?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com";
 
                 // Phim nổi bật (slider)
-                renderMovies(items.slice(0, 10), "movies-hot", cdn);
+                renderHotSlider(items.slice(0, 10), "movies-hot", cdn);
                 initSlider();
 
-                // Load other sections
+                // Sôi nổi nhất
+                renderMovies(items.slice(0, 12), "movies-hot-row", cdn);
+                // Yêu thích nhất (giả lập từ phim nổi bật)
+                renderMovies(items.slice(0, 12).sort(() => Math.random() - 0.5), "movies-fav", cdn);
+                // Thể loại hot (giả lập từ phim hành động)
+                loadMoviesByCategory("hanh-dong", "movies-hot-genre");
+                // Other sections
                 loadMoviesByCategory("hanh-dong", "movies-hd");
                 loadMoviesByCategory("tinh-cam", "movies-tc");
                 loadMoviesByCategory("kinh-di", "movies-kd");
@@ -663,46 +795,55 @@
 
         function initSlider() {
             const slider = document.getElementById("hotSlider");
-            const container = document.getElementById("movies-hot");
+            const slides = slider.querySelectorAll(".hot-slide");
+            const dotsContainer = document.getElementById("sliderDots");
             const prevBtn = slider.querySelector(".prev");
             const nextBtn = slider.querySelector(".next");
             let currentIndex = 0;
-            const movies = container.querySelectorAll(".movie");
-            const totalMovies = movies.length;
-            const moviesPerSlide = window.innerWidth <= 600 ? 1 : 2;
+            const totalSlides = slides.length;
+
+            // Create dots
+            dotsContainer.innerHTML = Array(totalSlides).fill().map((_, i) => `
+                <div class="slider-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
+            `).join("");
 
             function updateSlider() {
-                const offset = -currentIndex * (100 / moviesPerSlide);
-                container.style.transform = `translateX(${offset}%)`;
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle("active", i === currentIndex);
+                });
+                dotsContainer.querySelectorAll(".slider-dot").forEach((dot, i) => {
+                    dot.classList.toggle("active", i === currentIndex);
+                });
             }
 
             prevBtn.addEventListener("click", () => {
-                currentIndex = Math.max(currentIndex - 1, 0);
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
                 updateSlider();
             });
 
             nextBtn.addEventListener("click", () => {
-                currentIndex = Math.min(currentIndex + 1, Math.ceil(totalMovies / moviesPerSlide) - 1);
+                currentIndex = (currentIndex + 1) % totalSlides;
                 updateSlider();
             });
 
-            // Auto slide
+            dotsContainer.addEventListener("click", e => {
+                if (e.target.classList.contains("slider-dot")) {
+                    currentIndex = parseInt(e.target.dataset.index);
+                    updateSlider();
+                }
+            });
+
             let autoSlide = setInterval(() => {
-                currentIndex = (currentIndex + 1) % Math.ceil(totalMovies / moviesPerSlide);
+                currentIndex = (currentIndex + 1) % totalSlides;
                 updateSlider();
             }, 5000);
 
             slider.addEventListener("mouseenter", () => clearInterval(autoSlide));
             slider.addEventListener("mouseleave", () => {
                 autoSlide = setInterval(() => {
-                    currentIndex = (currentIndex + 1) % Math.ceil(totalMovies / moviesPerSlide);
+                    currentIndex = (currentIndex + 1) % totalSlides;
                     updateSlider();
                 }, 5000);
-            });
-
-            window.addEventListener("resize", () => {
-                currentIndex = 0;
-                updateSlider();
             });
         }
 
