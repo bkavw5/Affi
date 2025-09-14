@@ -3,93 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visualizer Nhạc với Dải Thanh Trắng</title>
+  <title>Visualizer Nhạc</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Roboto',sans-serif;
+      background:linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
         url('https://hinhanhdep.net/wp-content/uploads/2017/11/hinh-nen-anime-4k-dep-17.jpg') center/cover fixed;
-      color: white;
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      overflow: hidden;
+      color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column
     }
-    .container { width: 100%; max-width: 800px; text-align: center; padding: 20px; z-index: 10; }
-    #chooser {
-      background: rgba(0,0,0,0.7); border-radius: 15px; padding: 30px;
-      box-shadow: 0 0 25px rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-    }
-    #chooser-dialog { display: flex; flex-direction: column; gap: 20px; }
-    .file-upload { position: relative; overflow: hidden; width: 100%; }
-    .file-select {
-      background: rgba(255,255,255,0.1); border: 2px dashed #fff; border-radius: 10px;
-      padding: 15px; color: #fff; cursor: pointer; transition: 0.3s;
-    }
-    .file-select:hover { background: rgba(255,255,255,0.15); }
-    .file-select input[type="file"] {
-      position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
-    }
-    button {
-      background: linear-gradient(45deg,#fff,#ccc); border: none; border-radius: 50px;
-      color: #000; padding: 15px; font-size: 16px; font-weight: bold; cursor: pointer;
-      transition: 0.3s; box-shadow: 0 5px 15px rgba(255,255,255,0.2);
-    }
-    button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,255,255,0.3); }
-    button:active { transform: translateY(1px); }
-    button.disabled { background: #666; cursor: not-allowed; box-shadow: none; color: #999; }
-    #scene { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 1; }
-    #scene-canvas { width: 100%; height: 100%; }
-    .audio-info {
-      position: fixed; bottom: 20px; left: 0; right: 0; text-align: center; z-index: 10;
-      background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 10px; margin: 0 20px; backdrop-filter: blur(5px);
-    }
-    #song-name { font-weight: bold; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #song-time { font-size: 16px; color: #ccc; }
-    .hidden { display: none !important; } .visible { display: flex !important; }
-    #spinner-outer { display: flex; justify-content: center; align-items: center; height: 50px; }
-    #error {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-      display: flex; justify-content: center; align-items: center; z-index: 1000;
-    }
-    #error-dialog {
-      background: #222; padding: 30px; border-radius: 15px; text-align: center; max-width: 400px;
-      box-shadow: 0 0 20px rgba(255,0,0,0.5);
-    }
-    #error-title { color: #FF3366; margin-bottom: 15px; font-size: 24px; }
-    #error-button { background: #FF3366; margin-top: 20px; color: #fff; }
-    .title { font-size: 32px; margin-bottom: 10px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-    .subtitle { font-size: 18px; margin-bottom: 30px; color: #ccc; }
-    .volume-control {
-      position: fixed; top: 20px; right: 20px; z-index: 10; display: flex; align-items: center;
-      background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 30px; backdrop-filter: blur(5px);
-    }
-    .volume-control span { margin-right: 10px; font-size: 20px; }
-    .volume-control input { width: 100px; }
+    .container{max-width:800px;text-align:center;padding:20px;z-index:10}
+    #chooser{background:rgba(0,0,0,0.7);border-radius:15px;padding:30px;backdrop-filter:blur(10px)}
+    #chooser-dialog{display:flex;flex-direction:column;gap:20px}
+    .file-upload{position:relative;overflow:hidden;width:100%}
+    .file-select{background:rgba(255,255,255,0.1);border:2px dashed #fff;border-radius:10px;padding:15px;color:#fff;cursor:pointer}
+    .file-select:hover{background:rgba(255,255,255,0.15)}
+    .file-select input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+    button{background:linear-gradient(45deg,#fff,#ccc);border:none;border-radius:50px;color:#000;padding:15px;font-weight:bold;cursor:pointer}
+    button.disabled{background:#666;color:#999;cursor:not-allowed}
+    #scene{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;z-index:1}
+    #scene-canvas{width:100%;height:100%}
+    .audio-info{position:fixed;top:20px;left:20px;background:rgba(0,0,0,0.5);padding:10px 15px;border-radius:10px;backdrop-filter:blur(5px)}
+    #song-name{font-weight:bold;font-size:16px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #song-time{font-size:14px;color:#ccc}
+    .hidden{display:none!important}.visible{display:flex!important}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="title"></h1>
-    <p class="subtitle"></p>
-    <div id="chooser">
-      <div id="chooser-dialog">
-        <input accept="image/*" id="verborgen_file" type="file" hidden />
-        <button id="uploadButton" type="button">Chọn ảnh nền</button>
-        <div class="file-upload">
-          <div class="file-select">
-            <input accept="audio/*" id="chooser-input" type="file"/> 
-            Chọn nhạc cần phát (MP3, WAV, ...)
-          </div>
+  <div class="container" id="chooser">
+    <div id="chooser-dialog">
+      <input type="file" id="bg-file" accept="image/*" hidden>
+      <button id="bg-btn">Chọn ảnh nền</button>
+      <div class="file-upload">
+        <div class="file-select">
+          <input type="file" id="audio-file" accept="audio/*">
+          Chọn nhạc cần phát (MP3, WAV, ...)
         </div>
-        <p>Chỉ nhận file âm thanh. File sẽ được xử lý trực tiếp trên trình duyệt.</p>
-        <div id="spinner-outer" class="hidden">
-          <svg height="30" id="spinner" viewBox="0 0 30 30" width="30">
-            <circle class="path" cx="15" cy="15" r="13" fill="none" stroke-linecap="round" stroke-width="2"/>
-          </svg>
-        </div>
-        <button id="chooser-button">Phát Nhạc</button>
       </div>
+      <button id="play-btn" class="disabled">Phát nhạc</button>
     </div>
   </div>
 
@@ -102,136 +53,115 @@
     <div id="song-time">00:00 / 00:00</div>
   </div>
 
-  <div class="volume-control">
-    <span>🔊</span>
-    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.75">
-  </div>
+<script>
+let audioContext, analyser, gainNode, sourceNode;
+let audioDataArray, canvas, ctx;
+let file=null, fileName="", startTime=0, duration=0, playing=false;
+let progressHeight=8, progressRadius=6;
 
-  <div id="error" class="hidden">
-    <div id="error-dialog">
-      <h1 id="error-title"></h1>
-      <p id="error-text"></p>
-      <button id="error-button">Đóng</button>
-    </div>
-  </div>
+window.onload=()=>{
+  canvas=document.getElementById("scene-canvas");
+  ctx=canvas.getContext("2d");
+  resizeCanvas(); window.onresize=resizeCanvas;
 
-  <script>
-    let audioInput, file, fileName = "", playButton, audioContext, audioBufferSourceNode;
-    let audioPlaying = false, canvas, ctx, elapsedTime = 0, startTime = 0, durationTime = 0;
-    let analyser, audioDrawingArray, animationFrameId, volume = 0.75, audioGainNode;
-
-    window.onload = () => {
-      audioContext = window.AudioContext ? new AudioContext() : null;
-      if (!audioContext) return showError("Trình duyệt không hỗ trợ", "Vui lòng dùng trình duyệt hiện đại hơn.");
-
-      audioInput = document.getElementById("chooser-input");
-      audioInput.onchange = () => {
-        if (audioInput.files.length) {
-          file = audioInput.files[0];
-          fileName = file.name;
-          document.getElementById('song-name').textContent = fileName;
-          enableButton();
-        }
-      };
-
-      playButton = document.getElementById("chooser-button");
-      playButton.onclick = handlePlayClick;
-      disableButton();
-
-      canvas = document.getElementById("scene-canvas");
-      ctx = canvas.getContext("2d");
-      resizeCanvas();
-      window.addEventListener("resize", resizeCanvas);
-
-      document.getElementById("volume-slider").oninput = e => {
-        volume = +e.target.value;
-        if (audioGainNode) audioGainNode.gain.value = volume;
-      };
-
-      document.getElementById("uploadButton").onclick = () => document.getElementById("verborgen_file").click();
-      document.getElementById("verborgen_file").onchange = e => {
-        const f = e.target.files[0]; if (!f) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-          document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)), url(${ev.target.result})`;
-        };
-        reader.readAsDataURL(f);
-      };
-
-      document.getElementById("error-button").onclick = () => document.getElementById("error").className = "hidden";
+  document.getElementById("bg-btn").onclick=()=>document.getElementById("bg-file").click();
+  document.getElementById("bg-file").onchange=e=>{
+    const f=e.target.files[0]; if(!f)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      document.body.style.backgroundImage=
+        `linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),url(${ev.target.result})`;
     };
+    reader.readAsDataURL(f);
+  };
 
-    const resizeCanvas = () => { if (canvas) { canvas.width = innerWidth; canvas.height = innerHeight; } };
-    const disableButton = () => playButton.className = "disabled";
-    const enableButton = () => playButton.className = "";
+  document.getElementById("audio-file").onchange=e=>{
+    file=e.target.files[0];
+    if(file){fileName=file.name;document.getElementById("song-name").textContent=fileName;enablePlay();}
+  };
+  document.getElementById("play-btn").onclick=handlePlay;
+};
 
-    function handlePlayClick() {
-      if (!file || !file.type.startsWith("audio")) return showError("Lỗi!!!", "Vui lòng chọn file nhạc (MP3, WAV, ...).");
-      const reader = new FileReader();
-      reader.onload = e => {
-        audioContext.decodeAudioData(e.target.result).then(buffer => {
-          visualize(buffer);
-          document.getElementById("spinner-outer").className = "hidden";
-        }).catch(err => showError("Lỗi giải mã", err.message));
-      };
-      reader.onerror = err => showError("Lỗi đọc tập tin", err.message);
-      reader.readAsArrayBuffer(file);
-      document.getElementById("spinner-outer").className = "";
-    }
+function resizeCanvas(){canvas.width=innerWidth;canvas.height=innerHeight;}
+function enablePlay(){document.getElementById("play-btn").classList.remove("disabled");}
+function disablePlay(){document.getElementById("play-btn").classList.add("disabled");}
 
-    function visualize(buffer) {
-      audioBufferSourceNode = audioContext.createBufferSource();
-      audioBufferSourceNode.buffer = buffer;
-      analyser = audioContext.createAnalyser(); analyser.fftSize = 256;
-      audioDrawingArray = new Uint8Array(analyser.frequencyBinCount);
-      audioGainNode = audioContext.createGain(); audioGainNode.gain.value = volume;
+function handlePlay(){
+  if(!file||!file.type.startsWith("audio"))return;
+  if(!audioContext) audioContext=new AudioContext();
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    audioContext.decodeAudioData(ev.target.result).then(buffer=>{
+      playBuffer(buffer);
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
 
-      audioBufferSourceNode.connect(analyser);
-      analyser.connect(audioGainNode);
-      audioGainNode.connect(audioContext.destination);
+function playBuffer(buffer){
+  sourceNode=audioContext.createBufferSource();
+  sourceNode.buffer=buffer;
+  analyser=audioContext.createAnalyser(); analyser.fftSize=512;
+  audioDataArray=new Uint8Array(analyser.frequencyBinCount);
+  gainNode=audioContext.createGain(); gainNode.gain.value=0.8;
 
-      audioBufferSourceNode.start();
-      audioPlaying = true;
-      startTime = audioContext.currentTime;
-      durationTime = buffer.duration;
-      draw();
+  sourceNode.connect(analyser); analyser.connect(gainNode); gainNode.connect(audioContext.destination);
+  sourceNode.start();
+  startTime=audioContext.currentTime; duration=buffer.duration; playing=true;
+  sourceNode.onended=()=>{playing=false;showChooser();};
 
-      audioBufferSourceNode.onended = () => { audioPlaying = false; cancelAnimationFrame(animationFrameId); showChooser(); };
-      showScene();
-    }
+  showScene(); draw();
+}
 
-    const generateTime = s => `${String(Math.floor(s/60)).padStart(2,"0")}:${String(Math.floor(s%60)).padStart(2,"0")}`;
+function draw(){
+  if(!playing)return;
+  requestAnimationFrame(draw);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    function draw() {
-      if (!audioPlaying) return;
-      elapsedTime = audioContext.currentTime - startTime;
-      document.getElementById('song-time').textContent = `${generateTime(elapsedTime)} / ${generateTime(durationTime)}`;
-      analyser.getByteFrequencyData(audioDrawingArray);
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+  const barAreaHeight=canvas.height*0.25;
+  ctx.fillStyle="#000";
+  ctx.fillRect(0,canvas.height-barAreaHeight,canvas.width,barAreaHeight);
 
-      const barCount = 100, barWidth = canvas.width / barCount, centerY = canvas.height / 2, maxH = canvas.height*0.4;
-      for (let i=0;i<barCount;i++){
-        const val = audioDrawingArray[Math.floor(i/barCount*audioDrawingArray.length)]/255;
-        const h = val*maxH;
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        ctx.fillRect(i*barWidth, centerY-h/2, barWidth-2, h);
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.fillRect(i*barWidth, centerY+h/2, barWidth-2, 2);
-      }
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      for (let i=0;i<20;i++){
-        const val = audioDrawingArray[Math.floor(Math.random()*audioDrawingArray.length)]/255;
-        if (val>0.7){
-          const x = Math.random()*canvas.width, y=Math.random()*canvas.height, size=val*5;
-          ctx.beginPath(); ctx.arc(x,y,size,0,Math.PI*2); ctx.fill();
-        }
-      }
-      animationFrameId = requestAnimationFrame(draw);
-    }
+  analyser.getByteFrequencyData(audioDataArray);
+  const barCount=100, barWidth=canvas.width/barCount;
+  const baseY=canvas.height-barAreaHeight/2;
+  for(let i=0;i<barCount;i++){
+    const val=audioDataArray[Math.floor(i/barCount*audioDataArray.length)]/255;
+    const h=val*(barAreaHeight*0.9);
+    ctx.fillStyle="#fff";
+    ctx.fillRect(i*barWidth,baseY-h/2,barWidth-2,h);
+  }
 
-    const showScene = () => { document.getElementById("chooser").className = "hidden"; document.getElementById("scene").className = "visible"; };
-    const showChooser = () => { document.getElementById("chooser").className = ""; document.getElementById("scene").className = "hidden"; };
-    const showError = (t, msg) => { document.getElementById("error-title").textContent = t; document.getElementById("error-text").textContent = msg; document.getElementById("error").className = ""; };
-  </script>
+  const elapsed=audioContext.currentTime-startTime;
+  const ratio=Math.min(elapsed/duration,1);
+  document.getElementById("song-time").textContent=
+    `${formatTime(elapsed)} / ${formatTime(duration)}`;
+
+  const progressWidth=canvas.width*0.9;
+  const x=(canvas.width-progressWidth)/2;
+  const y=canvas.height-progressHeight*3;
+  ctx.fillStyle="#222";
+  roundRect(ctx,x,y,progressWidth,progressHeight,progressRadius,true,false);
+  ctx.fillStyle="#fff";
+  roundRect(ctx,x,y,progressWidth*ratio,progressHeight,progressRadius,true,false);
+}
+
+function roundRect(ctx,x,y,w,h,r,fill,stroke){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath(); if(fill)ctx.fill(); if(stroke)ctx.stroke();
+}
+
+function formatTime(s){return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(Math.floor(s%60)).padStart(2,"0")}`;}
+function showScene(){document.getElementById("chooser").className="hidden";document.getElementById("scene").className="visible";}
+function showChooser(){document.getElementById("chooser").className="";document.getElementById("scene").className="hidden";disablePlay();}
+</script>
 </body>
 </html>
