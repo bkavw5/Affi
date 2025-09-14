@@ -39,10 +39,7 @@
     .file-upload {
       margin: 15px 0;
     }
-
-    .file-upload input {
-      display: none;
-    }
+    .file-upload input {display:none;}
 
     .file-select {
       border: 2px dashed #fff;
@@ -51,13 +48,10 @@
       cursor: pointer;
       transition: 0.3s;
     }
-
-    .file-select:hover {
-      background: rgba(255,255,255,0.1);
-    }
+    .file-select:hover {background: rgba(255,255,255,0.1);}
 
     button {
-      margin-top: 15px;
+      margin-top: 12px;
       padding: 12px 20px;
       border: none;
       border-radius: 25px;
@@ -105,13 +99,22 @@
 <body>
   <div class="container" id="chooser">
     <h1 class="title">Visualizer Nhạc</h1>
-    <p class="subtitle">Chọn file nhạc để phát và hiển thị sóng nhạc</p>
+    <p class="subtitle">Chọn ảnh nền và file nhạc để phát sóng nhạc 🎵</p>
+
+    <div class="file-upload">
+      <label class="file-select">
+        <input type="file" id="bg-input" accept="image/*">
+        Chọn ảnh nền
+      </label>
+    </div>
+
     <div class="file-upload">
       <label class="file-select">
         <input type="file" id="chooser-input" accept="audio/*">
         Chọn file nhạc (MP3, WAV...)
       </label>
     </div>
+
     <button id="chooser-button" class="disabled">Phát nhạc</button>
   </div>
 
@@ -126,7 +129,7 @@
 
   <script>
     let audioContext, analyser, gainNode;
-    let source, dataArray;
+    let source, dataArray, smoothData = [];
     let canvas, ctx;
     let audioFile, fileName;
     let startTime = 0, duration = 0;
@@ -139,12 +142,12 @@
       resizeCanvas();
       window.addEventListener("resize", resizeCanvas);
 
-      const input = document.getElementById("chooser-input");
+      const inputAudio = document.getElementById("chooser-input");
       const button = document.getElementById("chooser-button");
 
-      input.onchange = () => {
-        if (input.files.length > 0) {
-          audioFile = input.files[0];
+      inputAudio.onchange = () => {
+        if (inputAudio.files.length > 0) {
+          audioFile = inputAudio.files[0];
           fileName = audioFile.name;
           document.getElementById("song-name").textContent = fileName;
           button.classList.remove("disabled");
@@ -160,6 +163,20 @@
           });
         };
         reader.readAsArrayBuffer(audioFile);
+      };
+
+      // chọn ảnh nền
+      const inputBg = document.getElementById("bg-input");
+      inputBg.onchange = () => {
+        if (inputBg.files.length > 0) {
+          const file = inputBg.files[0];
+          const reader = new FileReader();
+          reader.onload = e => {
+            document.body.style.backgroundImage =
+              `linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)), url(${e.target.result})`;
+          };
+          reader.readAsDataURL(file);
+        }
       };
     };
 
@@ -220,18 +237,36 @@
       ctx.fillRect(0, canvas.height - barAreaHeight, canvas.width, barAreaHeight);
 
       const isMobile = window.innerWidth < 768;
-      const barCount = isMobile ? 120 : 220;
+      const barCount = isMobile ? 90 : 180;
       const barWidth = canvas.width / barCount;
       const baseline = canvas.height - barAreaHeight/2;
 
+      if (smoothData.length !== barCount) {
+        smoothData = new Array(barCount).fill(0);
+      }
+
       for (let i=0; i<barCount; i++) {
         const idx = Math.floor(i/barCount*dataArray.length);
-        const value = dataArray[idx] / 255;
-        const h = value * (barAreaHeight*0.8);
+        const rawValue = dataArray[idx] / 255;
+        smoothData[i] = smoothData[i]*0.7 + rawValue*0.3;
+        const h = smoothData[i] * (barAreaHeight*0.8);
 
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(i*barWidth, baseline - h/2, Math.max(barWidth-1,2), h);
+        const gradient = ctx.createLinearGradient(0, baseline - h/2, 0, baseline + h/2);
+        gradient.addColorStop(0, "rgba(255,255,255,1)");
+        gradient.addColorStop(1, "rgba(200,200,200,0.8)");
+
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = "rgba(255,255,255,0.6)";
+        ctx.shadowBlur = 8;
+
+        const x = i*barWidth + barWidth/4;
+        const y = baseline - h/2;
+        const w = Math.max(barWidth/2, 2);
+        const r = w/2;
+        roundRect(ctx, x, y, w, h, r, true, false);
       }
+
+      ctx.shadowBlur = 0;
 
       const elapsed = audioContext.currentTime - startTime;
       document.getElementById("song-time").textContent =
@@ -239,7 +274,7 @@
       const ratio = Math.min(elapsed/duration,1);
 
       const progressWidth = canvas.width * 0.9;
-      const ph = 10, pr = 5;
+      const ph = 8, pr = 4;
       const x = (canvas.width - progressWidth)/2;
       const y = canvas.height - ph*3;
 
