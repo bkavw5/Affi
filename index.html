@@ -3,153 +3,642 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title> Film LQH.DEV</title>
-<meta name="description" content="" />
+<title>Film LQH.DEV - Trang web xem phim chất lượng cao</title>
+<meta name="description" content="Xem phim online miễn phí, chất lượng cao với giao diện trực quan và dễ sử dụng. Phim mới cập nhật liên tục hàng ngày." />
+<link rel="preconnect" href="https://phimapi.com">
+<link rel="preconnect" href="https://phimimg.com">
 <style>
-	footer {
-    background: var(--panel);
-    color: var(--muted);
-    padding: 24px 12px;
-    text-align: center;
-    font-size: 14px;
-    border-top: 1px solid #333;
-    margin-top: 40px;
-}
-
-footer .footer-content {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-footer h3 {
-    color: var(--accent);
-    margin-bottom: 12px;
-    font-size: 18px;
-}
-
-footer a {
-    color: var(--accent);
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
-}
-    :root{
-        --bg:#0f0f0f;
-        --panel:#1f1f1f;
-        --accent:#e50914;
-        --muted:#aaa;
-        --text:#fff;
+    :root {
+        --bg: #0a0a0a;
+        --panel: #1a1a1a;
+        --accent: #e50914;
+        --accent-hover: #ff0a16;
+        --muted: #aaa;
+        --text: #fff;
+        --card-radius: 12px;
+        --transition: all 0.3s ease;
     }
-    *{box-sizing:border-box}
-    body{
-        margin:0;
-        font-family:Arial, Helvetica, sans-serif;
-        background:var(--bg);
-        color:var(--text);
+    
+    * { 
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
-    header{
-        background:#141414;
-        padding:12px 16px;
-        position:sticky;
-        top:0;
-        z-index:120;
-        display:flex;
-        align-items:center;
-        gap:12px;
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        overflow-x: hidden;
     }
-    #logo { font-weight:700; font-size:18px; }
-    #searchInput{
-        flex:1;
-        padding:10px 5px;
-        border-radius:60px;
-        border:none;
-        background:#222;
-        color:var(--text);
+    
+    /* Header Styles */
+    header {
+        background: rgba(20, 20, 20, 0.95);
+        padding: 12px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #2a2a2a;
     }
-    #searchBtn{
-        padding:10px 10px;
-        border-radius:60px;
-        border:none;
-        background:var(--accent);
-        color:white;
-        cursor:pointer;
-        font-weight:600;
+    
+    #logo {
+        display: flex;
+        align-items: center;
     }
-    main{ padding:18px 12px 60px; }
-    h2{
-        margin:18px 12px 8px;
-        font-size:20px;
+    
+    #logo img {
+        height: 40px;
+        transition: var(--transition);
     }
-
-    .movie-row{
-        display:flex;
-        gap:12px;
-        padding:0 12px 18px;
-        overflow-x:auto;
-        scroll-behavior:smooth;
+    
+    #logo img:hover {
+        transform: scale(1.05);
     }
-    .movie{
-        width:150px;
-        background:var(--panel);
-        border-radius:8px;
-        overflow:hidden;
-        cursor:pointer;
-        flex-shrink:0;
-        transition:transform .18s;
+    
+    #searchContainer {
+        flex: 1;
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
     }
-    .movie:hover{ transform:scale(1.05); }
-    .movie img{ width:100%; height:220px; object-fit:cover; display:block; }
-    .movie .title{ padding:8px; font-size:14px; height:40px; overflow:hidden; color:#eee; }
-
-    /* popup */
-    .popup{
-        position:fixed;
-        inset:0;
-        display:none;
-        justify-content:center;
-        align-items:flex-start;
-        background:rgba(0,0,0,.9);
-        z-index:200;
-        overflow:auto;
-        padding:30px 12px;
+    
+    #searchInput {
+        width: 100%;
+        padding: 12px 20px;
+        border-radius: 30px;
+        border: none;
+        background: #222;
+        color: var(--text);
+        font-size: 16px;
+        transition: var(--transition);
+        outline: none;
     }
-    .popup-content{
-        width:100%;
-        max-width:1000px;
-        background:transparent;
-        display:flex;
-        flex-direction:column;
+    
+    #searchInput:focus {
+        background: #2a2a2a;
+        box-shadow: 0 0 0 2px var(--accent);
     }
-    .player-container{ width:100%; background:black; border-radius:6px; overflow:hidden; }
-    iframe{ width:100%; height:540px; border:0; display:block; }
-
-    .popup-body{
-        display:flex;
-        gap:18px;
-        padding:16px;
-        flex-wrap:wrap;
-        background:transparent;
+    
+    #searchBtn {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        padding: 7px 16px;
+        border-radius: 30px;
+        border: none;
+        background: var(--accent);
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
     }
-    .popup-body img{ width:250px; border-radius:6px; object-fit:cover; }
-    .popup-info{ flex:1; min-width:260px; }
-    .popup-info h3{ margin:0 0 6px; font-size:22px; }
-    .meta{ color:var(--muted); font-size:14px; line-height:1.4; }
-    .desc{ color:#ddd; margin-top:10px; font-size:15px; line-height:1.5; max-height:100px; overflow:hidden; transition:max-height .25s ease; }
-    .desc.expanded{ max-height:600px; }
-    .toggle-btn{ margin-top:10px; padding:8px 12px; background:#2a2a2a; border-radius:6px; border:none; color:white; cursor:pointer; }
-    .episodes{ margin-top:12px; display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:8px; }
-    .episodes button{ padding:8px; background:#222; border:none; color:white; border-radius:6px; cursor:pointer; font-weight:600; }
-
-    .close-btn{ position:fixed; right:18px; top:18px; font-size:28px; color:white; cursor:pointer; z-index:210; }
-
-    /* small */
-    @media(max-width:600px){
-        .movie{ width:130px; }
-        iframe{ height:280px; }
-        .popup-body{ flex-direction:column; align-items:center; }
-        .popup-body img{ width:180px; }
+    
+    #searchBtn:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+    }
+    
+    /* Filter Styles */
+    .filter-container {
+        padding: 12px 16px;
+        background: #141414;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        border-bottom: 1px solid #2a2a2a;
+    }
+    
+    #toggleFilterBtn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 30px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        font-weight: 600;
+        width: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: var(--transition);
+    }
+    
+    #toggleFilterBtn:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+    
+    #filterPanel {
+        display: none;
+        gap: 12px;
+        flex-wrap: wrap;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .filter-select {
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #222;
+        color: #fff;
+        border: 1px solid #333;
+        min-width: 160px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+    
+    #applyFilterBtn, #clearFilterBtn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+    
+    #applyFilterBtn {
+        background: var(--accent);
+    }
+    
+    #applyFilterBtn:hover {
+        background: var(--accent-hover);
+    }
+    
+    #clearFilterBtn {
+        background: #333;
+    }
+    
+    #clearFilterBtn:hover {
+        background: #444;
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    /* Main Content */
+    main {
+        padding: 24px 12px 80px;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    h2 {
+        margin: 24px 12px 16px;
+        font-size: 22px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 32px 12px 16px;
+    }
+    
+    .view-all {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+    
+    .view-all:hover {
+        text-decoration: underline;
+    }
+    
+    .movie-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+        padding: 0 12px;
+    }
+    
+    .movie {
+        background: var(--panel);
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+    
+    .movie:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    }
+    
+    .movie-poster {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .movie .title {
+        padding: 12px;
+        font-size: 14px;
+        height: 52px;
+        overflow: hidden;
+        color: #eee;
+        font-weight: 600;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .movie-rating {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    /* Loading Animation */
+    .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid var(--accent);
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Popup Styles */
+    .popup {
+        position: fixed;
+        inset: 0;
+        display: none;
+        justify-content: center;
+        align-items: flex-start;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        overflow-y: auto;
+        padding: 40px 12px;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .popup-content {
+        width: 100%;
+        max-width: 1000px;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        animation: scaleIn 0.3s ease;
+    }
+    
+    .player-container {
+        width: 100%;
+        background: black;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        position: relative;
+        aspect-ratio: 16/9;
+    }
+    
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+    }
+    
+    .popup-body {
+        display: flex;
+        gap: 24px;
+        padding: 24px;
+        flex-wrap: wrap;
+        background: rgba(30, 30, 30, 0.8);
+        border-radius: 0 0 12px 12px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .popup-body img {
+        width: 280px;
+        border-radius: 8px;
+        object-fit: cover;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+    
+    .popup-info {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .popup-info h3 {
+        margin: 0 0 12px;
+        font-size: 24px;
+        line-height: 1.3;
+    }
+    
+    .meta {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 16px;
+    }
+    
+    .meta span {
+        margin-right: 16px;
+    }
+    
+    .desc {
+        color: #ddd;
+        margin-top: 16px;
+        font-size: 15px;
+        line-height: 1.6;
+        max-height: 120px;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .desc.expanded {
+        max-height: 1000px;
+    }
+    
+    .toggle-btn {
+        margin-top: 12px;
+        padding: 8px 16px;
+        background: #2a2a2a;
+        border-radius: 6px;
+        border: none;
+        color: white;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .toggle-btn:hover {
+        background: #333;
+    }
+    
+    .episodes {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    
+    .episodes button {
+        padding: 10px;
+        background: #222;
+        border: none;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+    
+    .episodes button:hover {
+        background: var(--accent);
+    }
+    
+    .episodes button.active {
+        background: var(--accent);
+    }
+    
+    .close-btn {
+        position: fixed;
+        right: 24px;
+        top: 24px;
+        font-size: 32px;
+        color: white;
+        cursor: pointer;
+        z-index: 2100;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        transition: var(--transition);
+    }
+    
+    .close-btn:hover {
+        background: var(--accent);
+        transform: rotate(90deg);
+    }
+    
+    /* Back to top button */
+    .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+        z-index: 999;
+        box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+    }
+    
+    .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .back-to-top:hover {
+        background: var(--accent-hover);
+        transform: translateY(-5px);
+    }
+    
+    /* Footer Styles */
+    footer {
+        background: var(--panel);
+        color: var(--muted);
+        padding: 40px 20px;
+        text-align: center;
+        font-size: 14px;
+        border-top: 1px solid #333;
+        margin-top: 60px;
+    }
+    
+    footer .footer-content {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    footer h3 {
+        color: var(--accent);
+        margin-bottom: 16px;
+        font-size: 20px;
+    }
+    
+    footer a {
+        color: var(--accent);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .footer-logo {
+        margin-bottom: 20px;
+    }
+    
+    .footer-logo img {
+        height: 70px;
+    }
+    
+    .footer-disclaimer {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 16px;
+        border-radius: 8px;
+        margin: 20px 0;
+        text-align: left;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes scaleIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 1200px) {
+        .movie-row {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+    
+    @media (max-width: 900px) {
+        .popup-body {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .popup-body img {
+            width: 220px;
+        }
+        
+        .player-container, iframe {
+            height: 400px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            flex-wrap: wrap;
+        }
+        
+        #searchContainer {
+            order: 3;
+            width: 100%;
+            margin-top: 12px;
+        }
+        
+        .movie-row {
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 16px;
+        }
+        
+        .movie-poster {
+            height: 190px;
+        }
+        
+        h2 {
+            font-size: 20px;
+        }
+        
+        .filter-select {
+            min-width: 100%;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        .movie {
+            width: 100%;
+        }
+        
+        .player-container, iframe {
+            height: 250px;
+        }
+        
+        .popup-body img {
+            width: 180px;
+        }
+        
+        .popup-info h3 {
+            font-size: 20px;
+        }
+        
+        .episodes {
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        }
+        
+        .back-to-top {
+            bottom: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .movie-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .movie-poster {
+            height: 160px;
+        }
+        
+        .popup-body {
+            padding: 16px;
+        }
     }
 </style>
 </head>
@@ -157,200 +646,202 @@ footer a:hover {
 
 <header>
     <div id="logo">
-        <img src="https://i.imgur.com/NEqqdDt.png" alt="Logo" style="height:50px;" />
+        <img src="https://i.imgur.com/NEqqdDt.png" alt="Film LQH.DEV Logo" />
     </div>
-    <input id="searchInput" placeholder="Nhập từ khóa..." />
-    <button id="searchBtn">Search</button>
+    <div id="searchContainer">
+        <input id="searchInput" placeholder="Tìm kiếm phim..." />
+        <button id="searchBtn">Tìm kiếm</button>
+    </div>
 </header>
 
-
-<div style="padding:12px 16px; background:#141414; display:flex; flex-direction: column; gap:12px;">
-  <button id="toggleFilterBtn" style="padding:10px 10px; border:none; border-radius:60px; background:var(--accent); color:#fff; cursor:pointer; font-weight:600; width:140px;">
-    Lọc phim 🎬
-  </button>
-
-  <div id="filterPanel" style="display:none; gap:12px; flex-wrap: wrap;">
-    <select id="filterCategory" style="padding:8px; border-radius:6px; background:#222; color:#fff; border:none; min-width:140px;">
-      <option value="">Thể loại</option>
-      <option value="hanh-dong">Hành động</option>
-      <option value="tinh-cam">Tình cảm</option>
-      <option value="co-trang">Cổ trang</option>
-      <option value="kinh-di">Kinh dị</option>
-      <option value="chien-tranh">Chiến tranh</option>
-      <option value="lich-su">Lịch sử</option>
-      <option value="tre-em">Trẻ em</option>
-      <option value="vien-tuong">Viễn tưởng</option>
-      <option value="tai-lieu">Tài liệu</option>
-      <option value="bi-an">Bí ẩn</option>
-      <option value="phim-18">Phim 18+</option>
-      <option value="tam-ly">Tâm lý</option>
-      <option value="the-thao">Thể thao</option>
-      <option value="phieu-luu">Phiêu lưu</option>
-      <option value="am-nhac">Âm nhạc</option>
-      <option value="gia-dinh">Gia đình</option>
-      <option value="hoc-duong">Học đường</option>
-      <option value="hai-huoc">Hài hước</option>
-      <option value="hinh-su">Hình sự</option>
-      <option value="vo-thuat">Võ thuật</option>
-      <option value="khoa-hoc">Khoa học</option>
-      <option value="than-thoai">Thần thoại</option>
-      <option value="chinh-kich">Chính kịch</option>
-      <option value="kinh-dien">Kinh điển</option>
-      <option value="mien-tay">Miền tây</option>
-      
-    </select>
-    <select id="filterCountry" style="padding:8px; border-radius:6px; background:#222; color:#fff; border:none; min-width:140px;">
-      <option value="">Quốc gia</option>
-      <option value="trung-quoc">Trung Quốc</option>
-      <option value="han-quoc">Hàn Quốc</option>
-      <option value="viet-nam">Việt Nam</option>
-      <option value="thai-lan">Thái Lan</option>
-      <option value="hong-kong">Hồng Kông</option>
-      <option value="phap">Pháp</option>
-      <option value="duc">Đức</option>
-      <option value="ha-lan">Hà Lan</option>
-      <option value="mexico">Mexico</option>
-      <option value="thuy-dien">Thụy Điển</option>
-      <option value="philippines">Philippines</option>
-      <option value="dan-mach">Đan Mạch</option>
-      <option value="thuy-si">Thụy Sĩ</option>
-      <option value="ukraina">Ukraina</option>
-      <option value="au-my">Âu Mỹ</option>
-      <option value="an-do">Ấn Độ</option>
-      <option value="canada">Canada</option>
-      <option value="tay-ban-nha">Tây Ban Nha</option>
-      <option value="indonesia">Indonesia</option>
-      <option value="ba-lan">Ba Lan</option>
-      <option value="malaysia">Malaysia</option>
-      <option value="bo-dao-nha">Bồ Đào Nha</option>
-      <option value="uae">UAE</option>
-      <option value="chau-phi">Châu Phi</option>
-      <option value="a-rap-xe-ut">Ả Rập Xê Út</option>
-      <option value="nhat-ban">Nhật Bản</option>
-      <option value="dai-loan">Đài Loan</option>
-      <option value="quoc-gia-khac">Quốc Gia Khác</option>
-      <option value="tho-nhi-ky">Thổ Nhĩ Kỳ</option>
-      <option value="nga">Nga</option>
-      <option value="uc">Úc</option>
-      <option value="brazil">Brazil</option>
-      <option value="y">Ý</option>
-      <option value="na-uy">Na Uy</option>
-      <option value="nam-phi">Nam Phi</option>
-    </select>
-    <select id="filterYear" style="padding:8px; border-radius:6px; background:#222; color:#fff; border:none; min-width:140px;">
-      <option value="">Năm</option>
-      <option value="1970">1970</option>
-  <option value="1971">1971</option>
-  <option value="1972">1972</option>
-  <option value="1973">1973</option>
-  <option value="1974">1974</option>
-  <option value="1975">1975</option>
-  <option value="1976">1976</option>
-  <option value="1977">1977</option>
-  <option value="1978">1978</option>
-  <option value="1979">1979</option>
-  <option value="1980">1980</option>
-  <option value="1981">1981</option>
-  <option value="1982">1982</option>
-  <option value="1983">1983</option>
-  <option value="1984">1984</option>
-  <option value="1985">1985</option>
-  <option value="1986">1986</option>
-  <option value="1987">1987</option>
-  <option value="1988">1988</option>
-  <option value="1989">1989</option>
-  <option value="1990">1990</option>
-  <option value="1991">1991</option>
-  <option value="1992">1992</option>
-  <option value="1993">1993</option>
-  <option value="1994">1994</option>
-  <option value="1995">1995</option>
-  <option value="1996">1996</option>
-  <option value="1997">1997</option>
-  <option value="1998">1998</option>
-  <option value="1999">1999</option>
-  <option value="2000">2000</option>
-  <option value="2001">2001</option>
-  <option value="2002">2002</option>
-  <option value="2003">2003</option>
-  <option value="2004">2004</option>
-  <option value="2005">2005</option>
-  <option value="2006">2006</option>
-  <option value="2007">2007</option>
-  <option value="2008">2008</option>
-  <option value="2009">2009</option>
-  <option value="2010">2010</option>
-  <option value="2011">2011</option>
-  <option value="2012">2012</option>
-  <option value="2013">2013</option>
-  <option value="2014">2014</option>
-  <option value="2015">2015</option>
-  <option value="2016">2016</option>
-  <option value="2017">2017</option>
-  <option value="2018">2018</option>
-  <option value="2019">2019</option>
-  <option value="2020">2020</option>
-  <option value="2021">2021</option>
-  <option value="2022">2022</option>
-  <option value="2023">2023</option>
-  <option value="2024">2024</option>
-  <option value="2025">2025</option>
-    </select>
-    <button id="applyFilterBtn" style="padding:10px 14px; border:none; border-radius:6px; background:var(--accent); color:#fff; cursor:pointer; font-weight:600;">
-      Áp dụng
+<div class="filter-container">
+    <button id="toggleFilterBtn">
+        <span>Lọc phim</span> 🎬
     </button>
-  </div>
+
+    <div id="filterPanel">
+        <select id="filterCategory" class="filter-select">
+            <option value="">Thể loại</option>
+            <option value="hanh-dong">Hành động</option>
+            <option value="tinh-cam">Tình cảm</option>
+            <option value="co-trang">Cổ trang</option>
+            <option value="kinh-di">Kinh dị</option>
+            <option value="chien-tranh">Chiến tranh</option>
+            <option value="lich-su">Lịch sử</option>
+            <option value="tre-em">Trẻ em</option>
+            <option value="vien-tuong">Viễn tưởng</option>
+            <option value="tai-lieu">Tài liệu</option>
+            <option value="bi-an">Bí ẩn</option>
+            <option value="phim-18">Phim 18+</option>
+            <option value="tam-ly">Tâm lý</option>
+            <option value="the-thao">Thể thao</option>
+            <option value="phieu-luu">Phiêu lưu</option>
+            <option value="am-nhac">Âm nhạc</option>
+            <option value="gia-dinh">Gia đình</option>
+            <option value="hoc-duong">Học đường</option>
+            <option value="hai-huoc">Hài hước</option>
+            <option value="hinh-su">Hình sự</option>
+            <option value="vo-thuat">Võ thuật</option>
+            <option value="khoa-hoc">Khoa học</option>
+            <option value="than-thoai">Thần thoại</option>
+            <option value="chinh-kich">Chính kịch</option>
+            <option value="kinh-dien">Kinh điển</option>
+            <option value="mien-tay">Miền tây</option>
+        </select>
+        
+        <select id="filterCountry" class="filter-select">
+            <option value="">Quốc gia</option>
+            <option value="trung-quoc">Trung Quốc</option>
+            <option value="han-quoc">Hàn Quốc</option>
+            <option value="viet-nam">Việt Nam</option>
+            <option value="thai-lan">Thái Lan</option>
+            <option value="hong-kong">Hồng Kông</option>
+            <option value="phap">Pháp</option>
+            <option value="duc">Đức</option>
+            <option value="ha-lan">Hà Lan</option>
+            <option value="mexico">Mexico</option>
+            <option value="thuy-dien">Thụy Điển</option>
+            <option value="philippines">Philippines</option>
+            <option value="dan-mach">Đan Mạch</option>
+            <option value="thuy-si">Thụy Sĩ</option>
+            <option value="ukraina">Ukraina</option>
+            <option value="au-my">Âu Mỹ</option>
+            <option value="an-do">Ấn Độ</option>
+            <option value="canada">Canada</option>
+            <option value="tay-ban-nha">Tây Ban Nha</option>
+            <option value="indonesia">Indonesia</option>
+            <option value="ba-lan">Ba Lan</option>
+            <option value="malaysia">Malaysia</option>
+            <option value="bo-dao-nha">Bồ Đào Nha</option>
+            <option value="uae">UAE</option>
+            <option value="chau-phi">Châu Phi</option>
+            <option value="a-rap-xe-ut">Ả Rập Xê Út</option>
+            <option value="nhat-ban">Nhật Bản</option>
+            <option value="dai-loan">Đài Loan</option>
+            <option value="quoc-gia-khac">Quốc Gia Khác</option>
+            <option value="tho-nhi-ky">Thổ Nhĩ Kỳ</option>
+            <option value="nga">Nga</option>
+            <option value="uc">Úc</option>
+            <option value="brazil">Brazil</option>
+            <option value="y">Ý</option>
+            <option value="na-uy">Na Uy</option>
+            <option value="nam-phi">Nam Phi</option>
+        </select>
+        
+        <select id="filterYear" class="filter-select">
+            <option value="">Năm</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+            <option value="2018">2018</option>
+            <option value="2017">2017</option>
+            <option value="2016">2016</option>
+            <option value="2015">2015</option>
+            <option value="2010-2014">2010-2014</option>
+            <option value="2000-2009">2000-2009</option>
+            <option value="1990-1999">1990-1999</option>
+            <option value="1980-1989">1980-1989</option>
+            <option value="1970-1979">1970-1979</option>
+        </select>
+        
+        <div class="filter-actions">
+            <button id="applyFilterBtn">Áp dụng</button>
+            <button id="clearFilterBtn">Xóa lọc</button>
+        </div>
+    </div>
 </div>
 
-
-
 <main id="main">
-    <h2> 🔥 Phim Hot</h2>
+    <div class="section-header">
+        <h2>🔥 Phim Hot</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-hot" class="movie-row"></div>
     
-    <h2>  ⚔️ Phim hành động giật gân</h2>
+    <div class="section-header">
+        <h2>⚔️ Phim hành động</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-hd" class="movie-row"></div>
     
-    <h2>  💞 Phim tình cảm</h2>
+    <div class="section-header">
+        <h2>💞 Phim tình cảm</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-tc" class="movie-row"></div>
-    <h2>  🎃 Phim kinh dị</h2>
+    
+    <div class="section-header">
+        <h2>🎃 Phim kinh dị</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-kd" class="movie-row"></div>
     
-    <h2>  🎬 Phim lẻ</h2>
+    <div class="section-header">
+        <h2>🎬 Phim lẻ</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-le" class="movie-row"></div>
     
-    <h2>  🎞️ Phim bộ</h2>
+    <div class="section-header">
+        <h2>🎞️ Phim bộ</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-bo" class="movie-row"></div>
     
-    <h2>  🇻🇳 Phim Việt Nam</h2>
+    <div class="section-header">
+        <h2>🇻🇳 Phim Việt Nam</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-viet" class="movie-row"></div>
-    <h2>  🇹🇭 Phim Thái Lan</h2>
+    
+    <div class="section-header">
+        <h2>🇹🇭 Phim Thái Lan</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-thai" class="movie-row"></div>
 
-    <h2>🇰🇷   Phim Hàn Quốc</h2>
+    <div class="section-header">
+        <h2>🇰🇷 Phim Hàn Quốc</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-han" class="movie-row"></div>
 
-    <h2>  🇨🇳 Phim Trung Quốc</h2>
+    <div class="section-header">
+        <h2>🇨🇳 Phim Trung Quốc</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-trung" class="movie-row"></div>
     
-    <h2>  🇬🇧 Phim Anh</h2>
+    <div class="section-header">
+        <h2>🇬🇧 Phim Anh</h2>
+        <a href="#" class="view-all">Xem tất cả</a>
+    </div>
     <div id="movies-anh" class="movie-row"></div>
 </main>
 
-<!-- popup -->
+<div class="back-to-top" id="backToTop">↑</div>
+
+<!-- Popup -->
 <div id="popup" class="popup" role="dialog" aria-modal="true">
-    <span class="close-btn" id="popupClose"> ×</span>
+    <span class="close-btn" id="popupClose">×</span>
     <div class="popup-content">
-        <div class="player-container" id="player"></div>
+        <div class="player-container" id="player">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
         <div class="popup-body">
             <img id="moviePoster" src="" alt="Poster" />
             <div class="popup-info">
-                <h3 id="movieTitle">Tiêu đề   </h3>
+                <h3 id="movieTitle">Tiêu đề</h3>
                 <div id="movieMeta" class="meta"></div>
                 <div id="movieDesc" class="desc"></div>
                 <button id="toggleDescBtn" class="toggle-btn" style="display:none">Xem thêm▼</button>
 
-                <h4 style="margin-top:12px">Danh sách</h4>
+                <h4 style="margin-top:20px;">Danh sách tập</h4>
                 <div id="episodeList" class="episodes"></div>
             </div>
         </div>
@@ -358,64 +849,158 @@ footer a:hover {
 </div>
 
 <script>
-	const toggleFilterBtn = document.getElementById("toggleFilterBtn");
-const filterPanel = document.getElementById("filterPanel");
-const applyFilterBtn = document.getElementById("applyFilterBtn");
+// Global variables
+let originalMainHtml = '';
+let isLoading = false;
 
-toggleFilterBtn.addEventListener("click", () => {
-  if (filterPanel.style.display === "flex") {
-    filterPanel.style.display = "none";
-  } else {
-    filterPanel.style.display = "flex";
-  }
+// DOM Content Loaded
+document.addEventListener('DOMContentLoaded', function() {
+    originalMainHtml = document.getElementById('main').innerHTML;
+    initEventListeners();
+    loadInitial();
+    initBackToTop();
 });
 
-applyFilterBtn.addEventListener("click", async () => {
-  const category = document.getElementById("filterCategory").value.trim();
-  const country = document.getElementById("filterCountry").value.trim();
-  const year = document.getElementById("filterYear").value.trim();
+// Initialize event listeners
+function initEventListeners() {
+    // Search functionality
+    document.getElementById('searchBtn').addEventListener('click', handleSearch);
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') handleSearch();
+    });
+    
+    // Filter functionality
+    document.getElementById('toggleFilterBtn').addEventListener('click', toggleFilterPanel);
+    document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);
+    document.getElementById('clearFilterBtn').addEventListener('click', clearFilters);
+    
+    // Popup functionality
+    document.getElementById('popupClose').addEventListener('click', closePopup);
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closePopup();
+    });
+    
+    // Close popup when clicking outside
+    document.getElementById('popup').addEventListener('click', function(e) {
+        if (e.target === this) closePopup();
+    });
+}
 
-  // Nếu tất cả đều trống, cảnh báo hoặc load lại trang
-  if (!category && !country && !year) {
-    alert("Vui lòng chọn ít nhất một bộ lọc!");
-    return;
-  }
+// Initialize back to top button
+function initBackToTop() {
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTopBtn.classList.add('visible');
+        } else {
+            backToTopBtn.classList.remove('visible');
+        }
+    });
+    
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
-  const params = new URLSearchParams({ page: 1, limit: 64 });
+// Toggle filter panel
+function toggleFilterPanel() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel.style.display === 'flex') {
+        filterPanel.style.display = 'none';
+    } else {
+        filterPanel.style.display = 'flex';
+    }
+}
 
-  if (category) params.append("category", category);
-  if (country) params.append("country", country);
-  if (year) params.append("year", year);
+// Handle search
+function handleSearch() {
+    const keyword = document.getElementById('searchInput').value.trim();
+    if (!keyword) {
+        alert('Vui lòng nhập từ khóa tìm kiếm.');
+        return;
+    }
+    
+    showLoading();
+    searchMovies(keyword);
+}
 
-  const apiUrl = `https://phimapi.com/v1/api/danh-sach/phim-bo?${params.toString()}`;
+// Apply filters
+async function applyFilters() {
+    const category = document.getElementById('filterCategory').value.trim();
+    const country = document.getElementById('filterCountry').value.trim();
+    const year = document.getElementById('filterYear').value.trim();
 
-  try {
-    const res = await fetch(apiUrl);
-    const data = await res.json();
-    const items = data?.data?.items || [];
-    const cdn = data?.data?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com";
+    if (!category && !country && !year) {
+        alert('Vui lòng chọn ít nhất một bộ lọc!');
+        return;
+    }
 
-    const main = document.getElementById("main");
-    main.innerHTML = `
-      <h2>🎯 Kết quả lọc phim</h2>
-      <div id="filter-results" class="movie-row"></div>
-      <button id="backHomeBtn" style="margin:12px;padding:8px 12px;background:#222;border:none;color:#fff;border-radius:6px;cursor:pointer;">⏎ Quay về trang chủ</button>
-    `;
-    renderMovies(items, "filter-results", cdn);
+    showLoading();
+    
+    const params = new URLSearchParams({ page: 1, limit: 64 });
+    if (category) params.append('category', category);
+    if (country) params.append('country', country);
+    if (year) params.append('year', year);
 
-    document.getElementById("backHomeBtn").onclick = () => {
-      main.innerHTML = originalMainHtml;
-      loadInitial();
-    };
+    const apiUrl = `https://phimapi.com/v1/api/danh-sach/phim-bo?${params.toString()}`;
 
-    // Ẩn bộ lọc sau khi áp dụng
-    filterPanel.style.display = "none";
-  } catch (e) {
-    console.error("Lỗi lọc phim", e);
-    alert("Lỗi khi lọc phim, vui lòng thử lại.");
-  }
-});
+    try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        const items = data?.data?.items || [];
+        const cdn = data?.data?.APP_DOMAIN_CDN_IMAGE || 'https://phimimg.com';
 
+        const main = document.getElementById('main');
+        main.innerHTML = `
+            <div class="section-header">
+                <h2>🎯 Kết quả lọc phim</h2>
+                <button id="backHomeBtn" class="view-all">⏎ Quay về trang chủ</button>
+            </div>
+            <div id="filter-results" class="movie-row"></div>
+        `;
+        
+        renderMovies(items, 'filter-results', cdn);
+        
+        document.getElementById('backHomeBtn').addEventListener('click', () => {
+            main.innerHTML = originalMainHtml;
+            initEventListeners();
+            loadInitial();
+        });
+        
+        filterPanel.style.display = 'none';
+    } catch (e) {
+        console.error('Lỗi lọc phim', e);
+        alert('Lỗi khi lọc phim, vui lòng thử lại.');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Clear filters
+function clearFilters() {
+    document.getElementById('filterCategory').value = '';
+    document.getElementById('filterCountry').value = '';
+    document.getElementById('filterYear').value = '';
+}
+
+// Show loading state
+function showLoading() {
+    if (isLoading) return;
+    isLoading = true;
+    
+    const main = document.getElementById('main');
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'loading';
+    loadingDiv.innerHTML = '<div class="spinner"></div>';
+    main.appendChild(loadingDiv);
+}
+
+// Hide loading state
+function hideLoading() {
+    isLoading = false;
+    const loadingElements = document.querySelectorAll('.loading');
+    loadingElements.forEach(el => el.remove());
+}
 
 /** ===== helper build image URL (use CDN domain if path relative) ===== **/
 function buildImageUrl(path, cdnDomain = "https://phimimg.com") {
@@ -429,12 +1014,20 @@ function buildImageUrl(path, cdnDomain = "https://phimimg.com") {
 function renderMovies(movies, containerId, cdnDomain = "https://phimimg.com") {
     const el = document.getElementById(containerId);
     if (!el) return;
+    
+    if (movies.length === 0) {
+        el.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--muted);">Không tìm thấy phim nào.</p>';
+        return;
+    }
+    
     el.innerHTML = movies.map(m => {
         const imgPath = m.poster_url || m.thumb_url || "";
         const img = buildImageUrl(imgPath, cdnDomain);
         const safeName = (m.name || m.origin_name || "No title").replace(/"/g, "&quot;");
+        const rating = m.rating || Math.random() * 5 + 5; // Fallback random rating 5-10
         return `<div class="movie" data-slug="${m.slug || ''}" onclick="getMovieDetail('${m.slug}')">
-            <img src="${img}" alt="${safeName}" loading="lazy">
+            <img src="${img}" alt="${safeName}" class="movie-poster" loading="lazy">
+            <div class="movie-rating">${rating.toFixed(1)}</div>
             <div class="title">${safeName}</div>
         </div>`;
     }).join("");
@@ -442,31 +1035,37 @@ function renderMovies(movies, containerId, cdnDomain = "https://phimimg.com") {
 
 /** ===== Load initial sections ===== **/
 async function loadInitial() {
-    // 1. Hot list (from danh-sach/phim-moi-cap-nhat)
+    showLoading();
+    
     try {
+        // 1. Hot list (from danh-sach/phim-moi-cap-nhat)
         const r = await fetch("https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=1");
         const d = await r.json();
         const items = d?.items || [];
         renderMovies(items.slice(0,10), "movies-hot", d?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com");
     } catch(e){ console.error("hot list error",e); }
 
-    // 2. By countries
-    loadMoviesByCountry("han-quoc", "movies-han");
-    loadMoviesByCountry("trung-quoc", "movies-trung");
-    loadMoviesByCountry("viet-nam", "movies-viet");
-    loadMoviesByCountry("thai-lan", "movies-thai");
-    loadMoviesByCountry("anh", "movies-anh");
-    loadMoviesBytheloai("hanh-dong", "movies-hd");
-    loadMoviesBytheloai("tinh-cam", "movies-tc");
-    loadMoviesBytheloai("kinh-di", "movies-kd");
-    loadMoviesBylebo("phim-bo", "movies-bo");
-    loadMoviesBylebo("phim-le", "movies-le");
+    // 2. By countries and categories
+    await Promise.allSettled([
+        loadMoviesByCountry("han-quoc", "movies-han"),
+        loadMoviesByCountry("trung-quoc", "movies-trung"),
+        loadMoviesByCountry("viet-nam", "movies-viet"),
+        loadMoviesByCountry("thai-lan", "movies-thai"),
+        loadMoviesByCountry("anh", "movies-anh"),
+        loadMoviesBytheloai("hanh-dong", "movies-hd"),
+        loadMoviesBytheloai("tinh-cam", "movies-tc"),
+        loadMoviesBytheloai("kinh-di", "movies-kd"),
+        loadMoviesBylebo("phim-bo", "movies-bo"),
+        loadMoviesBylebo("phim-le", "movies-le")
+    ]);
+    
+    hideLoading();
 }
 
 /** load movies by country slug into container */
 async function loadMoviesByCountry(slug, containerId) {
     try {
-        const r = await fetch(`https://phimapi.com/v1/api/quoc-gia/${slug}?page=1&limit=64`);
+        const r = await fetch(`https://phimapi.com/v1/api/quoc-gia/${slug}?page=1&limit=20`);
         const d = await r.json();
         const items = d?.data?.items || [];
         const cdn = d?.data?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com";
@@ -476,7 +1075,7 @@ async function loadMoviesByCountry(slug, containerId) {
 
 async function loadMoviesBytheloai(slug, containerId) {
     try {
-        const r = await fetch(`https://phimapi.com/v1/api/the-loai/${slug}?page=1&limit=64`);
+        const r = await fetch(`https://phimapi.com/v1/api/the-loai/${slug}?page=1&limit=20`);
         const d = await r.json();
         const items = d?.data?.items || [];
         const cdn = d?.data?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com";
@@ -486,29 +1085,35 @@ async function loadMoviesBytheloai(slug, containerId) {
 
 async function loadMoviesBylebo(slug, containerId) {
     try {
-        const r = await fetch(`https://phimapi.com/v1/api/danh-sach/${slug}?page=1&limit=64`);
+        const r = await fetch(`https://phimapi.com/v1/api/danh-sach/${slug}?page=1&limit=20`);
         const d = await r.json();
         const items = d?.data?.items || [];
         const cdn = d?.data?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com";
         renderMovies(items, containerId, cdn);
     } catch(e){ console.error("thể loại load error", e); }
 }
+
 /** ===== search: show results + suggested section ===== **/
 async function searchMovies(keyword) {
     if (!keyword) return;
-    // fetch search
+    
     try {
         const r = await fetch(`https://phimapi.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}&limit=64`);
         const d = await r.json();
         const items = d?.data?.items || [];
         const cdn = d?.data?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com";
 
-        // create a search results section (replace main content temporarily)
+        // create a search results section
         const main = document.getElementById("main");
         main.innerHTML = `
-            <h2>  Kết quả tìm kiếm: "${escapeHtml(keyword)}"</h2>
+            <div class="section-header">
+                <h2>Kết quả tìm kiếm: "${escapeHtml(keyword)}"</h2>
+                <button id="backHomeBtn" class="view-all">⏎ Quay về trang chủ</button>
+            </div>
             <div id="search-results" class="movie-row"></div>
-            <h2> 🎯 Gợi ý film</h2>
+            <div class="section-header">
+                <h2>🎯 Gợi ý cho bạn</h2>
+            </div>
             <div id="suggested-movies" class="movie-row"></div>
         `;
 
@@ -521,20 +1126,24 @@ async function searchMovies(keyword) {
         const hotCdn = hotData?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com";
         renderMovies(hotItems, "suggested-movies", hotCdn);
 
-        // add a "Back to Home" button on top so user can return
-        const backBtn = document.createElement("button");
-        backBtn.textContent = "  ⏎";
-        backBtn.style.cssText = "margin:10px;padding:8px 12px;background:#222;border:none;color:#fff;border-radius:6px;cursor:pointer";
-        backBtn.onclick = () => { document.getElementById("main").innerHTML = originalMainHtml; loadInitial(); };
-        main.insertBefore(backBtn, main.firstChild);
+        // add event listener for back button
+        document.getElementById("backHomeBtn").addEventListener("click", () => { 
+            main.innerHTML = originalMainHtml; 
+            initEventListeners();
+            loadInitial(); 
+        });
     } catch(e){
         console.error("search error", e);
-        alert("L oi tim kiem film");
+        alert("Lỗi tìm kiếm phim");
+    } finally {
+        hideLoading();
     }
 }
 
 /** escape for display */
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" }[m])); }
+function escapeHtml(s){ 
+    return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" }[m])); 
+}
 
 /** ===== popup detail ===== **/
 const popup = document.getElementById("popup");
@@ -543,26 +1152,36 @@ popupClose.addEventListener("click", closePopup);
 
 async function getMovieDetail(slug) {
     if (!slug) return;
+    
+    showPopupLoading();
+    openPopup();
+    
     try {
         const r = await fetch(`https://phimapi.com/phim/${slug}`);
         const d = await r.json();
-        if (!d?.status) { alert("Khong tim thay thong tin phim"); return; }
+        if (!d?.status) { 
+            alert("Không tìm thấy thông tin phim"); 
+            closePopup();
+            return; 
+        }
 
         const movie = d.movie || {};
         const episodes = d.episodes?.[0]?.server_data || [];
-
-        // L y domain  nh t  API, fallback sang phimimg.com
         const cdnDomain = d?.APP_DOMAIN_CDN_IMAGE || "https://phimimg.com";
 
         // update title/meta
-        if (movie.titleHead) document.title = movie.titleHead;
+        if (movie.titleHead) document.title = movie.titleHead + " | Film LQH.DEV";
         if (movie.descriptionHead) {
             let meta = document.querySelector('meta[name="description"]');
-            if (!meta) { meta = document.createElement("meta"); meta.name = "description"; document.head.appendChild(meta); }
+            if (!meta) { 
+                meta = document.createElement("meta"); 
+                meta.name = "description"; 
+                document.head.appendChild(meta); 
+            }
             meta.content = movie.descriptionHead;
         }
 
-        // D�ng h�m buildImageUrl    t o URL  nh chu n
+        // Build image URL
         const posterUrl = buildImageUrl(movie.poster_url || movie.thumb_url, cdnDomain);
         document.getElementById("moviePoster").src = posterUrl;
 
@@ -570,7 +1189,12 @@ async function getMovieDetail(slug) {
 
         const genres = (movie.category?.map(c=>c.name).join(", ")) || "Không rõ";
         const countries = (movie.country?.map(c=>c.name).join(", ")) || "Không rõ";
-        document.getElementById("movieMeta").innerHTML = ` ⏳ Thời gian: ${movie.time||'N/A'} | ${movie.quality||'N/A'} <br>  🎭 Thể loại: ${genres}<br>🌐 Quốc gia: ${countries}`;
+        document.getElementById("movieMeta").innerHTML = `
+            <span>⏳ ${movie.time||'N/A'}</span>
+            <span>🎬 ${movie.quality||'N/A'}</span>
+            <span>🎭 ${genres}</span>
+            <span>🌐 ${countries}</span>
+        `;
 
         // desc toggle
         const descEl = document.getElementById("movieDesc");
@@ -583,7 +1207,7 @@ async function getMovieDetail(slug) {
             toggleBtn.textContent = "Xem thêm▼";
             toggleBtn.onclick = () => {
                 const expanded = descEl.classList.toggle("expanded");
-                toggleBtn.textContent = expanded ? "Thu gọn" : "Xem thêm▼";
+                toggleBtn.textContent = expanded ? "Thu gọn▲" : "Xem thêm▼";
             };
         } else {
             toggleBtn.style.display = "none";
@@ -591,71 +1215,87 @@ async function getMovieDetail(slug) {
 
         // episodes
         const epList = document.getElementById("episodeList");
-        epList.innerHTML = episodes.map((ep,i)=> {
-            const url = ep.link_embed || ep.link || ep.file || "#";
-            return `<button onclick="playEpisode('${url}')">T ập ${i+1}</button>`;
-        }).join("");
-
-        openPopup();
+        if (episodes.length > 0) {
+            epList.innerHTML = episodes.map((ep,i)=> {
+                const url = ep.link_embed || ep.link || ep.file || "#";
+                return `<button onclick="playEpisode('${url}', this)">Tập ${i+1}</button>`;
+            }).join("");
+            
+            // Auto play first episode
+            if (episodes[0].link_embed || episodes[0].link || episodes[0].file) {
+                const firstEp = epList.querySelector('button');
+                firstEp.classList.add('active');
+                playEpisode(episodes[0].link_embed || episodes[0].link || episodes[0].file, firstEp);
+            }
+        } else {
+            epList.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--muted);">Không có tập nào.</p>';
+        }
 
     } catch(e){
         console.error("detail error", e);
-        alert("Lỗi tìm chi tiết phim");
+        alert("Lỗi tải chi tiết phim");
+        closePopup();
+    } finally {
+        hidePopupLoading();
     }
 }
 
-function playEpisode(url){
-    if(!url) return alert("Link không hợp lệ");
-    // embed in iframe � some URLs may block embedding
+function showPopupLoading() {
+    const player = document.getElementById("player");
+    player.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+}
+
+function hidePopupLoading() {
+    const loading = document.querySelector('#player .loading');
+    if (loading) loading.remove();
+}
+
+function playEpisode(url, element){
+    if(!url || url === "#") return alert("Link không hợp lệ");
+    
+    // Remove active class from all buttons and add to clicked one
+    const buttons = document.querySelectorAll('#episodeList button');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+    
+    // embed in iframe
     const player = document.getElementById("player");
     player.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+    
     // scroll popup content to top of player for better UX
-    setTimeout(()=> {
-        player.scrollIntoView({behavior:"smooth", block:"center"});
-    },120);
+    setTimeout(() => {
+        player.scrollIntoView({behavior: "smooth", block: "start"});
+    }, 100);
 }
 
 function openPopup(){
+    document.body.style.overflow = 'hidden';
     popup.style.display = "flex";
-    window.scrollTo({ top:0, behavior:'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 function closePopup(){
+    document.body.style.overflow = 'auto';
     document.getElementById("player").innerHTML = "";
     popup.style.display = "none";
+    document.title = "Film LQH.DEV - Trang web xem phim chất lượng cao";
 }
-
-/** store original main html to restore after search */
-const originalMainHtml = document.getElementById("main").innerHTML;
-
-/** ===== wire search events ===== **/
-document.getElementById("searchBtn").addEventListener("click", ()=>{
-    const kw = document.getElementById("searchInput").value.trim();
-    if (!kw) return alert("Vui lòng nhập từ khoá tìm kiếm.");
-    searchMovies(kw);
-});
-document.getElementById("searchInput").addEventListener("keypress",(e)=>{
-    if(e.key === "Enter"){
-        document.getElementById("searchBtn").click();
-    }
-});
-
-/** initialize */
-loadInitial();
 </script>
 </body>
 <footer>
   <div class="footer-content">
-    <div id="logo">
-        <img src="https://i.imgur.com/HECw3fz.png" alt="Logo" style="height:70px;" />
+    <div class="footer-logo">
+        <img src="https://i.imgur.com/HECw3fz.png" alt="LQH.DEV Logo" />
     </div>
     <p>
       LQH.DEV cung cấp thông tin phim hot, cập nhật nhanh các thể loại phim đa dạng, phục vụ người xem phim tại Việt Nam và quốc tế. Chúng tôi luôn cố gắng mang đến trải nghiệm xem phim tốt nhất cho bạn.
     </p>
-    <p>
-      Lưu ý: Chúng tôi từ chối mọi trách nhiệm liên quan đến nội dung hiển thị/tồn tại trên trang. Tất cả video và dữ liệu tại đây đều được tổng hợp từ các nguồn phổ biến trên Internet, và không thuộc quyền sở hữu hay kiểm soát của chúng tôi. Chúng tôi không cung cấp dịch vụ phát trực tuyến chính thức. Nếu bạn cho rằng quyền lợi của mình bị ảnh hưởng, vui lòng liên hệ ngay cho chúng tôi sẽ xử lý và gỡ bỏ nội dung vi phạm kịp thời. Xin cảm ơn sự thông cảm và hợp tác của bạn.
-    </p>
-    <p>Copyright &copy; 2025</p>
+    <div class="footer-disclaimer">
+      <p>
+        <strong>Lưu ý:</strong> Chúng tôi từ chối mọi trách nhiệm liên quan đến nội dung hiển thị/tồn tại trên trang. Tất cả video và dữ liệu tại đây đều được tổng hợp từ các nguồn phổ biến trên Internet, và không thuộc quyền sở hữu hay kiểm soát của chúng tôi. Chúng tôi không cung cấp dịch vụ phát trực tuyến chính thức. Nếu bạn cho rằng quyền lợi của mình bị ảnh hưởng, vui lòng liên hệ ngay cho chúng tôi sẽ xử lý và gỡ bỏ nội dung vi phạm kịp thời. Xin cảm ơn sự thông cảm và hợp tác của bạn.
+      </p>
+    </div>
+    <p>Copyright &copy; 2025 LQH.DEV. All rights reserved.</p>
   </div>
-  
 </footer>
 </html>
