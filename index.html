@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dora Forum</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #1e2027; color: #fff; }
+    .forum-card { background: rgba(255,255,255,0.05); }
+    .bbcode img { max-width: 100%; border-radius: 8px; margin-top: 6px; }
+    .bbcode iframe { width: 100%; height: 300px; border: none; border-radius: 8px; margin-top: 6px; }
+    .sticky { border: 2px solid #facc15; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<div class="max-w-4xl mx-auto p-4">
+  <h1 class="text-3xl font-bold text-center mb-6">🎯 Dora Forum</h1>
+
+  <!-- Login -->
+  <div id="loginForm" class="mb-6 forum-card p-4 rounded-lg">
+    <input id="loginName" type="text" placeholder="Tên đăng nhập" class="p-2 w-full mb-2 rounded bg-gray-800">
+    <input id="loginPass" type="password" placeholder="Mật khẩu (nếu là Admin)" class="p-2 w-full mb-2 rounded bg-gray-800">
+    <button onclick="loginUser()" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 w-full">Đăng nhập</button>
+  </div>
+
+  <!-- User -->
+  <div id="userSection" class="hidden mb-6 forum-card p-4 rounded-lg">
+    <p>Xin chào, <span class="font-bold" id="currentUser"></span>!
+      <button onclick="logoutUser()" class="text-red-400 underline">Đăng xuất</button>
+    </p>
+  </div>
+
+  <!-- Post Topic -->
+  <form id="topicForm" onsubmit="postTopic(event)" class="hidden mb-6 forum-card p-4 rounded-lg">
+    <input id="title" type="text" placeholder="Tiêu đề" class="p-2 w-full mb-2 rounded bg-gray-800">
+    <textarea id="content" placeholder="Nội dung (hỗ trợ BBCode)" rows="4" class="p-2 w-full mb-2 rounded bg-gray-800"></textarea>
+    <select id="category" class="p-2 w-full mb-2 rounded bg-gray-800">
+      <option>Chung</option>
+      <option>Hỏi đáp</option>
+      <option>Thảo luận</option>
+    </select>
+    <button type="submit" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700">Đăng chủ đề</button>
+
+    <!-- BBCode Hướng dẫn -->
+    <div class="text-sm text-gray-400 mt-3">
+      <p><b>BBCode hỗ trợ:</b></p>
+      <p>[img]URL_ẢNH[/img], [video]URL_YOUTUBE[/video], [url=LINK]Tên[/url]</p>
+    </div>
+  </form>
+
+  <!-- Filter + Search -->
+  <div class="mb-4 flex gap-2">
+    <select id="filterCategory" onchange="applyFilterAndRender(1)" class="p-2 rounded bg-gray-800">
+      <option>Tất cả</option>
+      <option>Chung</option>
+      <option>Hỏi đáp</option>
+      <option>Thảo luận</option>
+    </select>
+    <input id="searchKeyword" type="text" oninput="applyFilterAndRender(1)" placeholder="Tìm kiếm..." class="p-2 rounded bg-gray-800 flex-1">
+  </div>
+
+  <!-- Topics -->
+  <div id="topicsList"></div>
+  <div id="pagination" class="mt-4 flex gap-2 flex-wrap"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBvYmh6q_fbXzVzXoRQ6OvsMfMlAX9A43o",
+  authDomain: "doravsub-forum.firebaseapp.com",
+  databaseURL: "https://doravsub-forum-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "doravsub-forum",
+  storageBucket: "doravsub-forum.firebasestorage.app",
+  messagingSenderId: "342949610098",
+  appId: "1:342949610098:web:36d2ed20f55f8d9df938eb"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
+
+<script>
+let currentUser = null, isAdmin = false;
+const pageSize = 5; let topics = [];
+
+// Cookie
+function setCookie(n,v,d=7){let t=new Date();t.setTime(t.getTime()+d*24*60*60*1000);document.cookie=n+"="+v+";expires="+t.toUTCString()+";path=/";}
+function getCookie(n){return document.cookie.split("; ").reduce((r,v)=>{const[k,val]=v.split("=");return k===n?val:r},"");}
+function eraseCookie(n){document.cookie=n+"=; Max-Age=0; path=/";}
+
+// Login
+window.onload=()=>{let u=getCookie("dora_user"),a=getCookie("dora_admin");if(u){currentUser=u;isAdmin=a==="1";showUserSection();}loadTopics();};
+function loginUser(){
+  let name=document.getElementById("loginName").value.trim();
+  let pass=document.getElementById("loginPass").value;
+  if(!name) return alert("Nhập tên đăng nhập");
+  if(name==="Admin"){ if(pass!=="Top123") return alert("Sai mật khẩu!"); isAdmin=true; setCookie("dora_admin","1"); }
+  currentUser=name; setCookie("dora_user",currentUser); showUserSection();
+}
+function logoutUser(){currentUser=null;isAdmin=false;eraseCookie("dora_user");eraseCookie("dora_admin");
+  document.getElementById("userSection").classList.add("hidden");
+  document.getElementById("loginForm").classList.remove("hidden");
+  document.getElementById("topicForm").classList.add("hidden");
+}
+function showUserSection(){
+  document.getElementById("currentUser").innerText=currentUser;
+  document.getElementById("userSection").classList.remove("hidden");
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("topicForm").classList.remove("hidden");
+}
+
+// === BBCode Parser ===
+function parseBBCode(text) {
+  return text
+    .replace(/\[b\](.*?)\[\/b\]/gi, '<strong>$1</strong>')
+    .replace(/\[i\](.*?)\[\/i\]/gi, '<em>$1</em>')
+    .replace(/\[u\](.*?)\[\/u\]/gi, '<u>$1</u>')
+    .replace(/\[url=(.*?)\](.*?)\[\/url\]/gi,
+      '<a href="$1" target="_blank" class="text-blue-400 underline">$2</a>')
+    .replace(/\[img\](.*?)\[\/img\]/gi,
+      '<img src="$1" class="max-w-full rounded shadow"/>')
+
+    // Video BBCode (YouTube hoặc MP4)
+    .replace(/\[video\](.*?)\[\/video\]/gi, (match, url) => {
+      if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        let videoId = "";
+        if (url.includes("youtu.be")) {
+          videoId = url.split("youtu.be/")[1];
+        } else {
+          try {
+            const params = new URL(url).searchParams;
+            videoId = params.get("v");
+          } catch(e) {}
+        }
+        return `<iframe class="w-full max-h-96 rounded" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+      }
+      return `<video controls class="w-full max-h-96 rounded">
+                <source src="${url}" type="video/mp4">
+                Trình duyệt không hỗ trợ video.
+              </video>`;
+    })
+
+    // Embed iframe BBCode
+    .replace(/\[embed\](.*?)\[\/embed\]/gi, (match, url) => {
+      return `<iframe src="${url}" class="w-full rounded shadow max-h-[500px]" frameborder="0" allowfullscreen></iframe>`;
+    });
+}
+  
+// Post topic
+function postTopic(e){
+  e.preventDefault(); if(!currentUser) return alert("Bạn cần đăng nhập!");
+  let title=document.getElementById("title").value.trim();
+  let content=document.getElementById("content").value.trim();
+  let category=document.getElementById("category").value;
+  let now=Date.now();
+  db.ref("topics").push({title,content,category,author:currentUser,ts:now,sticky:false,comments:{}})
+    .then(()=>{document.getElementById("topicForm").reset();loadTopics();});
+}
+
+// Avatar
+function avatarUrl(name){return `https://api.dicebear.com/5.x/adventurer/svg?seed=${encodeURIComponent(name)}`;}
+
+// Load topics
+function loadTopics(){
+  db.ref("topics").once("value",snap=>{
+    topics=[]; let obj=snap.val()||{};
+    topics=Object.entries(obj).map(([id,t])=>({id,...t}));
+    applyFilterAndRender(1);
+  });
+}
+function applyFilterAndRender(page){
+  let cat=document.getElementById("filterCategory").value;
+  let kw=document.getElementById("searchKeyword").value.trim().toLowerCase();
+  let arr=topics;
+  if(cat!=="Tất cả") arr=arr.filter(t=>t.category===cat);
+  if(kw) arr=arr.filter(t=>t.title.toLowerCase().includes(kw)||t.content.toLowerCase().includes(kw));
+  arr.sort((a,b)=>b.ts-a.ts);
+  arr.sort((a,b)=> (b.sticky===true)-(a.sticky===true));
+  let total=arr.length,pages=Math.ceil(total/pageSize),start=(page-1)*pageSize;
+  renderTopics(arr.slice(start,start+pageSize)); renderPagination(page,pages);
+}
+function renderTopics(arr){
+  let cont=document.getElementById("topicsList");
+  cont.innerHTML=arr.map(t=>{
+    let time=new Date(t.ts).toLocaleString("vi-VN");
+    let cmCnt=t.comments?Object.keys(t.comments).length:0;
+    let isAuthorAdmin=t.author==="Admin";
+    return `
+      <div class="forum-card p-4 rounded mb-4 ${t.sticky?"sticky":""}">
+        <div class="flex items-center mb-2">
+          <img src="${avatarUrl(t.author)}" class="w-8 h-8 rounded-full mr-2">
+          <span class="${isAuthorAdmin?"text-yellow-400 font-bold":""}">${isAuthorAdmin?"👑 ":""}${t.author}</span>
+          <span class="text-sm text-gray-400 ml-auto">${time}</span>
+        </div>
+        <h2 class="text-xl font-semibold">${t.title}</h2>
+        <div class="bbcode text-gray-300">${parseBBCode(t.content)}</div>
+        <div class="flex justify-between mt-2 text-sm text-gray-400">
+          <span>📁 ${t.category}</span>
+          <span>💬 ${cmCnt}</span>
+        </div>
+        <div class="mt-2">${renderCommentSection(t)}</div>
+        ${isAdmin?`
+          <div class="mt-2 flex gap-2">
+            <button onclick="deleteTopic('${t.id}')" class="text-red-400 hover:underline">Xóa</button>
+            <button onclick="editTopicPrompt('${t.id}','${t.title}','${t.content}')" class="text-blue-400 hover:underline">Sửa</button>
+            <button onclick="toggleSticky('${t.id}',${t.sticky})" class="text-yellow-400 hover:underline">${t.sticky?"Bỏ ghim":"Ghim"}</button>
+          </div>`:""}
+      </div>`;}).join("");
+}
+function renderCommentSection(topic){
+  return `<div>${topic.comments?Object.entries(topic.comments).map(([cid,cm])=>{
+      let t=new Date(cm.ts).toLocaleString("vi-VN"); let isAdminComment=cm.user==="Admin";
+      return `<div class="flex items-start mb-2">
+        <img src="${avatarUrl(cm.user)}" class="w-6 h-6 rounded-full mr-2">
+        <div class="flex-1">
+          <div class="flex justify-between">
+            <span class="${isAdminComment?"text-yellow-400 font-bold":""}">${isAdminComment?"👑 ":""}${cm.user}</span>
+            <span class="text-xs text-gray-400">${t}</span>
+          </div>
+          <p class="bbcode">${parseBBCode(cm.text)}</p>
+          ${isAdmin?`<button onclick="deleteComment('${topic.id}','${cid}')" class="text-xs text-red-400 hover:underline">Xóa</button>`:""}
+        </div>
+      </div>`;}).join(""):""}</div>
+      ${currentUser?`
+        <div class="mt-2 flex">
+          <input id="cm-input-${topic.id}" type="text" placeholder="Bình luận..." class="flex-1 p-1 rounded bg-gray-800">
+          <button onclick="postComment('${topic.id}')" class="ml-2 px-2 bg-blue-500 hover:bg-blue-600 rounded">Gửi</button>
+        </div>`:""}`;
+}
+function postComment(id){
+  let inp=document.getElementById("cm-input-"+id); let text=inp.value.trim(); if(!text) return;
+  db.ref("topics/"+id+"/comments").push({user:currentUser,text,ts:Date.now()})
+    .then(()=>{inp.value="";loadTopics();});
+}
+
+// Admin tools
+function deleteTopic(id){if(confirm("Xóa chủ đề?")) db.ref("topics/"+id).remove().then(loadTopics);}
+function editTopicPrompt(id,title,content){let nt=prompt("Tiêu đề:",title); if(nt===null) return;
+  let nc=prompt("Nội dung:",content); if(nc===null) return;
+  db.ref("topics/"+id).update({title:nt,content:nc}).then(loadTopics);}
+function toggleSticky(id,cur){db.ref("topics/"+id).update({sticky:!cur}).then(loadTopics);}
+function deleteComment(tid,cid){if(confirm("Xóa bình luận?")) db.ref("topics/"+tid+"/comments/"+cid).remove().then(loadTopics);}
+
+// Pagination
+function renderPagination(cur,max){
+  let pg=document.getElementById("pagination"); pg.innerHTML="";
+  for(let i=1;i<=max;i++){let b=document.createElement("button");
+    b.innerText=i; b.className=`px-2 py-1 rounded ${i===cur?"bg-yellow-500":"bg-gray-700"} hover:bg-gray-600`;
+    b.onclick=()=>applyFilterAndRender(i); pg.appendChild(b);}
+}
+</script>
+
+</body>
+</html>
